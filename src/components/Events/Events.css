@@ -232,9 +232,40 @@
   object-fit: cover;
 }
 
+@media (max-width: 1024px) {
+  .events-list {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  }
+}
+
 @media (max-width: 768px) {
+  .events-header h2 {
+    font-size: 24px;
+  }
+  
+  .events-header p {
+    font-size: 14px;
+  }
+  
   .events-list {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .event-card {
+    border-radius: var(--radius-lg);
+  }
+  
+  .event-image {
+    height: 180px;
+  }
+  
+  .event-content {
+    padding: 16px;
+  }
+  
+  .event-title {
+    font-size: 20px;
   }
 
   .form-row {
@@ -243,6 +274,72 @@
   
   .create-event-button {
     max-width: 100%;
+    padding: 14px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  .events-header h2 {
+    font-size: 22px;
+  }
+  
+  .event-image {
+    height: 160px;
+  }
+  
+  .event-content {
+    padding: 14px;
+  }
+  
+  .event-title {
+    font-size: 18px;
+  }
+  
+  .event-description {
+    font-size: 14px;
+  }
+  
+  .event-rsvp-btn {
+    padding: 12px;
+    font-size: 14px;
+  }
+  
+  .create-event-button {
+    padding: 12px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .events-header h2 {
+    font-size: 20px;
+  }
+  
+  .event-image {
+    height: 140px;
+  }
+  
+  .event-content {
+    padding: 12px;
+  }
+  
+  .event-title {
+    font-size: 16px;
+  }
+  
+  .event-description {
+    font-size: 13px;
+  }
+  
+  .event-rsvp-btn {
+    padding: 10px;
+    font-size: 13px;
+  }
+  
+  .create-event-button {
+    padding: 10px;
+    font-size: 12px;
   }
 }
 

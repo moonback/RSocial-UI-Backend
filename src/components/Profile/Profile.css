@@ -353,10 +353,29 @@
   color: #6b7280;
 }
 
+@media (max-width: 1024px) {
+  .profile-container {
+    gap: 20px;
+  }
+  
+  .posts-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
 @media (max-width: 768px) {
+  .profile-container {
+    gap: 16px;
+  }
+  
+  .profile-card {
+    padding: 24px;
+  }
+  
   .profile-header {
     flex-direction: column;
     text-align: center;
+    gap: 16px;
   }
 
   .profile-avatar {
@@ -365,6 +384,10 @@
   }
 
   .profile-name {
+    font-size: 24px;
+  }
+  
+  .profile-name-input {
     font-size: 24px;
   }
 
@@ -377,9 +400,122 @@
   .stat-value {
     font-size: 24px;
   }
+  
+  .stat-label {
+    font-size: 12px;
+  }
 
   .posts-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .profile-edit-form {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .profile-card {
+    padding: 20px;
+  }
+  
+  .profile-avatar {
+    width: 90px;
+    height: 90px;
+  }
+
+  .profile-name {
+    font-size: 22px;
+  }
+  
+  .profile-name-input {
+    font-size: 22px;
+  }
+  
+  .profile-email {
+    font-size: 14px;
+  }
+  
+  .profile-stats {
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .stat-value {
+    font-size: 20px;
+  }
+  
+  .stat-label {
+    font-size: 11px;
+  }
+  
+  .profile-posts h3 {
+    font-size: 20px;
+  }
+  
+  .profile-posts {
+    padding: 20px;
+  }
+  
+  .input-with-buttons {
+    flex-direction: column;
+  }
+  
+  .input-with-buttons .location-buttons {
+    width: 100%;
+    justify-content: stretch;
+  }
+  
+  .input-with-buttons .location-buttons button {
+    flex: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-container {
+    gap: 12px;
+  }
+  
+  .profile-card {
+    padding: 16px;
+  }
+  
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  .profile-name {
+    font-size: 20px;
+  }
+  
+  .profile-name-input {
+    font-size: 20px;
+  }
+  
+  .profile-stats {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 12px;
+  }
+  
+  .stat-item {
+    padding: 12px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+  }
+
+  .stat-value {
+    font-size: 24px;
+  }
+  
+  .profile-posts {
+    padding: 16px;
+  }
+  
+  .profile-posts h3 {
+    font-size: 18px;
   }
 }
 

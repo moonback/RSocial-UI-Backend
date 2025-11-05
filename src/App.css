@@ -147,8 +147,9 @@ code {
   margin-top: 56px;
   margin-left: 240px;
   padding: var(--spacing-md);
-  transition: margin-left var(--transition-slow);
+  transition: margin-left var(--transition-slow), margin-top var(--transition-slow);
   animation: fadeIn 0.4s ease-out;
+  min-height: calc(100vh - 56px);
 }
 
 /* Enhanced Animations */
@@ -873,25 +874,81 @@ code {
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+  .main-content {
+    padding: var(--spacing-md);
+  }
+  
+  .image-preview-list {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: var(--spacing-sm);
+  }
+}
+
 @media (max-width: 768px) {
   .main-content {
     margin-left: 0;
     padding: var(--spacing-md);
+    margin-top: 56px;
   }
   
   .modal-content {
     max-width: 100%;
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
     max-height: 95vh;
+    margin: 0;
   }
   
   .modal-overlay {
     padding: 0;
     align-items: flex-end;
   }
+  
+  .modal-header {
+    padding: var(--spacing-md);
+  }
+  
+  .modal-header h3 {
+    font-size: 18px;
+  }
+  
+  .modal-footer {
+    padding: var(--spacing-md);
+    flex-direction: column-reverse;
+  }
+  
+  .modal-footer button {
+    width: 100%;
+  }
+  
+  .btn-primary,
+  .btn-secondary {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+  
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+  
+  .image-preview-list {
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  }
+  
+  h1 { font-size: 22px; }
+  h2 { font-size: 20px; }
+  h3 { font-size: 18px; }
+  h4 { font-size: 16px; }
 }
 
 @media (max-width: 640px) {
+  .main-content {
+    padding: var(--spacing-sm);
+  }
+  
   .filter-chip,
   .type-button {
     font-size: 12px;
@@ -901,6 +958,111 @@ code {
   .empty-state-icon {
     font-size: 56px;
   }
+  
+  .empty-state {
+    padding: var(--spacing-lg) var(--spacing-md);
+  }
+  
+  .empty-state h3 {
+    font-size: 18px;
+  }
+  
+  .empty-state p {
+    font-size: 13px;
+  }
+  
+  .loading-container {
+    min-height: 300px;
+    padding: var(--spacing-lg);
+  }
+  
+  .spinner {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .loading-text {
+    font-size: 14px;
+  }
+  
+  .btn-primary,
+  .btn-secondary {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+  
+  .type-selector {
+    gap: var(--spacing-xs);
+  }
+  
+  .image-preview-list {
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: var(--spacing-xs);
+  }
+  
+  .image-preview {
+    aspect-ratio: 1;
+  }
+  
+  .image-remove {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    padding: var(--spacing-xs);
+  }
+  
+  .filter-chip,
+  .type-button {
+    font-size: 11px;
+    padding: 6px 12px;
+  }
+  
+  .empty-state-icon {
+    font-size: 48px;
+  }
+  
+  .empty-state h3 {
+    font-size: 16px;
+  }
+  
+  .modal-header {
+    padding: var(--spacing-sm);
+  }
+  
+  .modal-header h3 {
+    font-size: 16px;
+  }
+  
+  .modal-content {
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+  
+  .btn-primary,
+  .btn-secondary {
+    padding: 10px 14px;
+    font-size: 12px;
+  }
+  
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+  
+  .image-preview-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  h1 { font-size: 20px; }
+  h2 { font-size: 18px; }
+  h3 { font-size: 16px; }
+  h4 { font-size: 14px; }
 }
 
 /* Scrollbar - Modern Design */
