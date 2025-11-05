@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useApp } from '../../contexts/AppContext';
+import groupService from '../../services/groupService';
 import './Groups.css';
 
-const CreateGroup = ({ onClose }) => {
+const CreateGroup = ({ onClose, onGroupCreated }) => {
   const { user } = useAuth();
-  const { addGroup } = useApp();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -14,7 +14,7 @@ const CreateGroup = ({ onClose }) => {
 
   const groupTypes = ['Rue', 'Immeuble', 'Hobby', 'Autre'];
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.name.trim() || !formData.description.trim()) {
@@ -22,14 +22,24 @@ const CreateGroup = ({ onClose }) => {
       return;
     }
 
-    addGroup({
-      ...formData,
-      createdBy: user.id,
-      location: user.location,
-      avatar: `https://ui-avatars.com/api/?name=${formData.name}&background=random`,
-    });
+    try {
+      setLoading(true);
+      await groupService.createGroup({
+        ...formData,
+        location: user.location,
+      });
 
-    onClose();
+      if (onGroupCreated) {
+        onGroupCreated();
+      } else {
+        onClose();
+      }
+    } catch (error) {
+      console.error('Erreur création groupe:', error);
+      alert('Erreur lors de la création du groupe');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -78,11 +88,11 @@ const CreateGroup = ({ onClose }) => {
           </div>
 
           <div className="modal-footer">
-            <button type="button" className="btn-secondary" onClick={onClose}>
+            <button type="button" className="btn-secondary" onClick={onClose} disabled={loading}>
               Annuler
             </button>
-            <button type="submit" className="btn-primary">
-              Créer le groupe
+            <button type="submit" className="btn-primary" disabled={loading}>
+              {loading ? 'Création...' : 'Créer le groupe'}
             </button>
           </div>
         </form>

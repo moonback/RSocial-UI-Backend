@@ -1,26 +1,52 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useApp } from '../../contexts/AppContext';
-import { filterByDistance } from '../../utils/geolocation';
+import groupService from '../../services/groupService';
 import GroupCard from './GroupCard';
 import CreateGroup from './CreateGroup';
 import './Groups.css';
 
 const Groups = () => {
   const { user } = useAuth();
-  const { groups } = useApp();
+  const [groups, setGroups] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showCreateGroup, setShowCreateGroup] = useState(false);
   const [filter, setFilter] = useState('all');
 
+  // Charger les groupes depuis l'API
+  useEffect(() => {
+    loadGroups();
+  }, [user.location, user.radius]);
+
+  const loadGroups = async () => {
+    try {
+      setLoading(true);
+      const fetchedGroups = await groupService.getGroups(
+        user.location.lat,
+        user.location.lng,
+        user.radius
+      );
+      setGroups(fetchedGroups);
+    } catch (error) {
+      console.error('Erreur chargement groupes:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGroupCreated = () => {
+    loadGroups();
+    setShowCreateGroup(false);
+  };
+
   const filteredGroups = useMemo(() => {
-    let filtered = filterByDistance(groups, user.location, user.radius);
+    let filtered = groups;
     
     if (filter === 'my-groups') {
-      filtered = filtered.filter(group => group.members.includes(user.id));
+      filtered = filtered.filter(group => group.isMember);
     }
     
     return filtered;
-  }, [groups, user.location, user.radius, user.id, filter]);
+  }, [groups, filter]);
 
   return (
     <div className="groups-container">
@@ -52,7 +78,12 @@ const Groups = () => {
       </div>
 
       <div className="groups-grid">
-        {filteredGroups.length === 0 ? (
+        {loading ? (
+          <div className="loading-container">
+            <div className="spinner"></div>
+            <p className="loading-text">Chargement des groupes...</p>
+          </div>
+        ) : filteredGroups.length === 0 ? (
           <div className="empty-state">
             <div className="empty-state-icon">👥</div>
             <h3>Aucun groupe trouvé</h3>
@@ -64,13 +95,13 @@ const Groups = () => {
           </div>
         ) : (
           filteredGroups.map(group => (
-            <GroupCard key={group.id} group={group} />
+            <GroupCard key={group.id} group={group} onGroupUpdated={loadGroups} />
           ))
         )}
       </div>
 
       {showCreateGroup && (
-        <CreateGroup onClose={() => setShowCreateGroup(false)} />
+        <CreateGroup onClose={() => setShowCreateGroup(false)} onGroupCreated={handleGroupCreated} />
       )}
     </div>
   );

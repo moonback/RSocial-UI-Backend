@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useApp } from '../../contexts/AppContext';
+import eventService from '../../services/eventService';
 import { formatEventDate } from '../../utils/dateUtils';
 import { calculateDistance, formatDistance } from '../../utils/geolocation';
 import './Events.css';
 
-const EventCard = ({ event }) => {
+const EventCard = ({ event, onEventUpdated }) => {
   const { user } = useAuth();
-  const { rsvpEvent } = useApp();
+  const [loading, setLoading] = useState(false);
+  const [isAttending, setIsAttending] = useState(event.isAttending);
 
   const distance = calculateDistance(
     user.location.lat,
@@ -16,12 +17,31 @@ const EventCard = ({ event }) => {
     event.location.lng
   );
 
-  const isAttending = event.attendees.includes(user.id);
-  const isFull = event.maxAttendees && event.attendees.length >= event.maxAttendees;
+  const isFull = event.max_attendees && event.attendees >= event.max_attendees;
 
-  const handleRSVP = () => {
-    if (!isFull || isAttending) {
-      rsvpEvent(event.id, user.id);
+  const handleRSVP = async () => {
+    if (isFull && !isAttending) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      if (isAttending) {
+        await eventService.cancelRsvp(event.id);
+        setIsAttending(false);
+      } else {
+        await eventService.rsvpEvent(event.id);
+        setIsAttending(true);
+      }
+      
+      if (onEventUpdated) {
+        onEventUpdated();
+      }
+    } catch (error) {
+      console.error('Erreur RSVP:', error);
+      alert(error.response?.data?.error || 'Erreur lors du RSVP');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -50,8 +70,8 @@ const EventCard = ({ event }) => {
           <div className="event-info-item">
             <span className="info-icon">👥</span>
             <span>
-              {event.attendees.length}
-              {event.maxAttendees && ` / ${event.maxAttendees}`} participants
+              {event.attendees}
+              {event.max_attendees && ` / ${event.max_attendees}`} participants
             </span>
           </div>
           <div className="event-info-item">
@@ -61,19 +81,23 @@ const EventCard = ({ event }) => {
         </div>
 
         <div className="event-organizer">
-          <img src={event.creatorAvatar} alt={event.creatorName} className="organizer-avatar" />
+          <img 
+            src={event.organizer?.avatar || `https://ui-avatars.com/api/?name=${event.organizer?.name}&background=random`} 
+            alt={event.organizer?.name} 
+            className="organizer-avatar" 
+          />
           <div>
             <div className="organizer-label">Organisé par</div>
-            <div className="organizer-name">{event.creatorName}</div>
+            <div className="organizer-name">{event.organizer?.name}</div>
           </div>
         </div>
 
         <button
           className={`event-rsvp-btn ${isAttending ? 'btn-attending' : 'btn-primary'} ${isFull && !isAttending ? 'btn-disabled' : ''}`}
           onClick={handleRSVP}
-          disabled={isFull && !isAttending}
+          disabled={isFull && !isAttending || loading}
         >
-          {isFull && !isAttending
+          {loading ? '⏳' : isFull && !isAttending
             ? '❌ Complet'
             : isAttending
             ? '✓ Vous participez'

@@ -1,16 +1,23 @@
 import express from 'express';
-import { authenticate } from '../middleware/auth.js';
+import {
+  createGroup,
+  getGroups,
+  joinGroup,
+  leaveGroup,
+  deleteGroup
+} from '../controllers/groupController.js';
+import { authenticate, optionalAuth } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Routes à implémenter selon les besoins
-router.get('/', authenticate, async (req, res) => {
-  res.json({ groups: [] });
-});
+// Routes publiques (avec auth optionnelle)
+router.get('/', optionalAuth, getGroups);
 
-router.post('/', authenticate, async (req, res) => {
-  res.status(201).json({ message: 'Groupe créé' });
-});
+// Routes protégées
+router.post('/', authenticate, createGroup);
+router.post('/:groupId/join', authenticate, joinGroup);
+router.post('/:groupId/leave', authenticate, leaveGroup);
+router.delete('/:groupId', authenticate, deleteGroup);
 
 export default router;
 

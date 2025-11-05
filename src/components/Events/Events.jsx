@@ -1,32 +1,47 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useApp } from '../../contexts/AppContext';
-import { filterByDistance } from '../../utils/geolocation';
+import eventService from '../../services/eventService';
 import EventCard from './EventCard';
 import CreateEvent from './CreateEvent';
 import './Events.css';
 
 const Events = () => {
   const { user } = useAuth();
-  const { events } = useApp();
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const [filter, setFilter] = useState('all');
 
-  const filteredEvents = useMemo(() => {
-    let filtered = filterByDistance(events, user.location, user.radius);
+  // Charger les événements depuis l'API
+  useEffect(() => {
+    loadEvents();
+  }, [user.location, user.radius, filter]);
 
-    if (filter === 'my-events') {
-      filtered = filtered.filter(
-        event => event.createdBy === user.id || event.attendees.includes(user.id)
+  const loadEvents = async () => {
+    try {
+      setLoading(true);
+      const fetchedEvents = await eventService.getEvents(
+        user.location.lat,
+        user.location.lng,
+        user.radius,
+        filter
       );
-    } else if (filter === 'upcoming') {
-      const now = new Date();
-      filtered = filtered.filter(event => new Date(event.date) > now);
+      setEvents(fetchedEvents);
+    } catch (error) {
+      console.error('Erreur chargement événements:', error);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    // Trier par date
-    return filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
-  }, [events, user.location, user.radius, user.id, filter]);
+  const handleEventCreated = () => {
+    loadEvents();
+    setShowCreateEvent(false);
+  };
+
+  const filteredEvents = useMemo(() => {
+    return events.sort((a, b) => new Date(a.date) - new Date(b.date));
+  }, [events]);
 
   return (
     <div className="events-container">
@@ -64,7 +79,12 @@ const Events = () => {
       </div>
 
       <div className="events-list">
-        {filteredEvents.length === 0 ? (
+        {loading ? (
+          <div className="loading-container">
+            <div className="spinner"></div>
+            <p className="loading-text">Chargement des événements...</p>
+          </div>
+        ) : filteredEvents.length === 0 ? (
           <div className="empty-state">
             <div className="empty-state-icon">📅</div>
             <h3>Aucun événement trouvé</h3>
@@ -76,13 +96,13 @@ const Events = () => {
           </div>
         ) : (
           filteredEvents.map(event => (
-            <EventCard key={event.id} event={event} />
+            <EventCard key={event.id} event={event} onEventUpdated={loadEvents} />
           ))
         )}
       </div>
 
       {showCreateEvent && (
-        <CreateEvent onClose={() => setShowCreateEvent(false)} />
+        <CreateEvent onClose={() => setShowCreateEvent(false)} onEventCreated={handleEventCreated} />
       )}
     </div>
   );

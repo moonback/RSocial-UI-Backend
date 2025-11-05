@@ -1,15 +1,23 @@
 import express from 'express';
-import { authenticate } from '../middleware/auth.js';
+import {
+  createEvent,
+  getEvents,
+  rsvpEvent,
+  cancelRsvp,
+  deleteEvent
+} from '../controllers/eventController.js';
+import { authenticate, optionalAuth } from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.get('/', authenticate, async (req, res) => {
-  res.json({ events: [] });
-});
+// Routes publiques (avec auth optionnelle)
+router.get('/', optionalAuth, getEvents);
 
-router.post('/', authenticate, async (req, res) => {
-  res.status(201).json({ message: 'Événement créé' });
-});
+// Routes protégées
+router.post('/', authenticate, createEvent);
+router.post('/:eventId/rsvp', authenticate, rsvpEvent);
+router.delete('/:eventId/rsvp', authenticate, cancelRsvp);
+router.delete('/:eventId', authenticate, deleteEvent);
 
 export default router;
 

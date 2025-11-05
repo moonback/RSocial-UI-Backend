@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useApp } from '../../contexts/AppContext';
+import groupService from '../../services/groupService';
 import { calculateDistance, formatDistance } from '../../utils/geolocation';
 import './Groups.css';
 
-const GroupCard = ({ group }) => {
+const GroupCard = ({ group, onGroupUpdated }) => {
   const { user } = useAuth();
-  const { joinGroup, leaveGroup } = useApp();
+  const [loading, setLoading] = useState(false);
+  const [isMember, setIsMember] = useState(group.isMember);
 
   const distance = calculateDistance(
     user.location.lat,
@@ -15,15 +16,31 @@ const GroupCard = ({ group }) => {
     group.location.lng
   );
 
-  const isMember = group.members.includes(user.id);
-
-  const handleJoinLeave = () => {
+  const handleJoinLeave = async () => {
     if (isMember) {
-      if (window.confirm('Êtes-vous sûr de vouloir quitter ce groupe ?')) {
-        leaveGroup(group.id, user.id);
+      if (!window.confirm('Êtes-vous sûr de vouloir quitter ce groupe ?')) {
+        return;
       }
-    } else {
-      joinGroup(group.id, user.id);
+    }
+
+    try {
+      setLoading(true);
+      if (isMember) {
+        await groupService.leaveGroup(group.id);
+        setIsMember(false);
+      } else {
+        await groupService.joinGroup(group.id);
+        setIsMember(true);
+      }
+      
+      if (onGroupUpdated) {
+        onGroupUpdated();
+      }
+    } catch (error) {
+      console.error('Erreur join/leave:', error);
+      alert('Erreur lors de l\'opération');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -51,7 +68,7 @@ const GroupCard = ({ group }) => {
         <div className="group-info">
           <div className="group-info-item">
             <span className="info-icon">👥</span>
-            <span>{group.members.length} membres</span>
+            <span>{group.members} membres</span>
           </div>
           <div className="group-info-item">
             <span className="info-icon">📍</span>
@@ -68,8 +85,9 @@ const GroupCard = ({ group }) => {
         <button
           className={`group-action-btn ${isMember ? 'btn-secondary' : 'btn-primary'}`}
           onClick={handleJoinLeave}
+          disabled={loading}
         >
-          {isMember ? '✓ Membre' : 'Rejoindre'}
+          {loading ? '⏳' : isMember ? '✓ Membre' : 'Rejoindre'}
         </button>
       </div>
     </div>

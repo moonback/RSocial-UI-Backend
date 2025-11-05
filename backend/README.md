@@ -63,6 +63,15 @@ Dans Supabase Dashboard → Storage → Create bucket:
 - Nom: `rsocial-uploads`
 - Public: ✅ Oui
 
+5. **Configurer les politiques RLS pour le Storage**
+
+Dans Supabase Dashboard → SQL Editor → New query:
+- Copier le contenu de `backend/SUPABASE_STORAGE_SETUP.sql`
+- Exécuter la query
+- Vérifier dans Storage → Policies que les 4 politiques sont créées
+
+⚠️ **IMPORTANT** : Sans ces politiques, les uploads échoueront avec une erreur 403
+
 ## 🎯 Démarrage
 
 ```bash

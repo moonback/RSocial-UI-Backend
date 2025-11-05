@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useApp } from '../../contexts/AppContext';
+import eventService from '../../services/eventService';
 import './Events.css';
 
-const CreateEvent = ({ onClose }) => {
+const CreateEvent = ({ onClose, onEventCreated }) => {
   const { user } = useAuth();
-  const { addEvent } = useApp();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -15,7 +15,7 @@ const CreateEvent = ({ onClose }) => {
     image: '',
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.title.trim() || !formData.description.trim() || !formData.date) {
@@ -28,16 +28,25 @@ const CreateEvent = ({ onClose }) => {
       return;
     }
 
-    addEvent({
-      ...formData,
-      createdBy: user.id,
-      creatorName: user.name,
-      creatorAvatar: user.avatar,
-      location: user.location,
-      maxAttendees: formData.maxAttendees ? parseInt(formData.maxAttendees) : null,
-    });
+    try {
+      setLoading(true);
+      await eventService.createEvent({
+        ...formData,
+        location: user.location,
+        maxAttendees: formData.maxAttendees ? parseInt(formData.maxAttendees) : null,
+      });
 
-    onClose();
+      if (onEventCreated) {
+        onEventCreated();
+      } else {
+        onClose();
+      }
+    } catch (error) {
+      console.error('Erreur création événement:', error);
+      alert('Erreur lors de la création de l\'événement');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -116,11 +125,11 @@ const CreateEvent = ({ onClose }) => {
           </div>
 
           <div className="modal-footer">
-            <button type="button" className="btn-secondary" onClick={onClose}>
+            <button type="button" className="btn-secondary" onClick={onClose} disabled={loading}>
               Annuler
             </button>
-            <button type="submit" className="btn-primary">
-              Créer l'événement
+            <button type="submit" className="btn-primary" disabled={loading}>
+              {loading ? 'Création...' : "Créer l'événement"}
             </button>
           </div>
         </form>
