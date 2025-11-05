@@ -113,31 +113,97 @@
   transform: translateY(-1px);
 }
 
+.form-group input.error {
+  border-color: #ef4444;
+  background-color: #fef2f2;
+}
+
+.form-group input.error:focus {
+  border-color: #ef4444;
+  box-shadow:
+    var(--glass-shadow-md),
+    0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+
 .form-group input:disabled {
   background-color: #f9fafb;
   cursor: not-allowed;
 }
 
-.input-with-button {
+.input-with-button,
+.input-with-buttons {
   display: flex;
   gap: 8px;
+  align-items: stretch;
 }
 
-.input-with-button input {
+.input-with-button input,
+.input-with-buttons input {
   flex: 1;
 }
 
-.input-with-button button {
+.input-with-button button,
+.input-with-buttons button {
   padding: 12px 16px;
   border: none;
   background-color: #f3f4f6;
   border-radius: 8px;
   cursor: pointer;
   font-size: 20px;
+  transition: all 0.2s;
 }
 
-.input-with-button button:hover {
+.input-with-button button:hover,
+.input-with-buttons button:hover {
   background-color: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+.input-with-buttons .location-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.input-with-buttons .location-buttons button {
+  padding: 12px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.input-with-buttons .btn-geocode {
+  background-color: #eff6ff;
+  border: 2px solid #3b82f6;
+}
+
+.input-with-buttons .btn-geocode:hover {
+  background-color: #dbeafe;
+}
+
+.input-with-buttons .btn-gps {
+  background-color: #f0fdf4;
+  border: 2px solid #10b981;
+}
+
+.input-with-buttons .btn-gps:hover {
+  background-color: #dcfce7;
+}
+
+.input-with-buttons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.location-info {
+  padding: 8px 12px;
+  background-color: #f0fdf4;
+  border: 1px solid #10b981;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #059669;
+  margin-top: 4px;
 }
 
 .error-text {
@@ -148,9 +214,50 @@
 .error-message {
   background-color: #fee2e2;
   color: #dc2626;
-  padding: 12px;
+  padding: 12px 16px;
   border-radius: 8px;
   font-size: 14px;
+  border: 2px solid #fca5a5;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  animation: shake 0.3s ease-in-out;
+}
+
+.error-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.error-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.error-link {
+  background: none;
+  border: none;
+  color: #dc2626;
+  text-decoration: underline;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  transition: color 0.2s;
+}
+
+.error-link:hover {
+  color: #991b1b;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
 }
 
 .form-divider {

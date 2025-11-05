@@ -138,6 +138,84 @@
   border-color: #667eea;
 }
 
+.profile-edit-form input.error {
+  border-color: #ef4444;
+  background-color: #fef2f2;
+}
+
+.profile-edit-form input.error:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+
+.input-with-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.input-with-buttons input {
+  flex: 1;
+}
+
+.input-with-buttons .location-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.input-with-buttons .location-buttons button {
+  padding: 12px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background-color: white;
+}
+
+.input-with-buttons .btn-geocode {
+  background-color: #eff6ff;
+  border-color: #3b82f6;
+}
+
+.input-with-buttons .btn-geocode:hover {
+  background-color: #dbeafe;
+}
+
+.input-with-buttons .btn-gps {
+  background-color: #f0fdf4;
+  border-color: #10b981;
+}
+
+.input-with-buttons .btn-gps:hover {
+  background-color: #dcfce7;
+}
+
+.input-with-buttons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.location-info {
+  padding: 8px 12px;
+  background-color: #f0fdf4;
+  border: 1px solid #10b981;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #059669;
+  margin-top: 4px;
+}
+
+.error-text {
+  color: #ef4444;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
 .profile-edit-form textarea {
   resize: vertical;
 }

@@ -74,3 +74,97 @@ export const formatDistance = (distance) => {
   return `${distance.toFixed(1)} km`;
 };
 
+// Dernière requête pour respecter le rate limiting de Nominatim (1 req/s)
+let lastGeocodeRequest = 0;
+const MIN_REQUEST_INTERVAL = 1000; // 1 seconde
+
+/**
+ * Convertit des coordonnées en adresse (géocodage inverse)
+ * Utilise l'API Nominatim d'OpenStreetMap (gratuite)
+ */
+export const reverseGeocode = async (lat, lng) => {
+  try {
+    // Utiliser l'API Nominatim pour le reverse geocoding
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`,
+      {
+        headers: {
+          'User-Agent': 'RSocial App'
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Erreur lors du géocodage inverse');
+    }
+
+    const data = await response.json();
+
+    if (!data || !data.display_name) {
+      throw new Error('Adresse introuvable pour cette position');
+    }
+
+    return {
+      lat: parseFloat(data.lat),
+      lng: parseFloat(data.lon),
+      address: data.display_name
+    };
+  } catch (error) {
+    console.error('Erreur reverse geocoding:', error);
+    throw new Error('Impossible de récupérer l\'adresse de cette position. Vérifiez votre connexion internet.');
+  }
+};
+
+/**
+ * Convertit une adresse en coordonnées géographiques (géocodage)
+ * Utilise l'API Nominatim d'OpenStreetMap (gratuite)
+ */
+export const geocodeAddress = async (address) => {
+  if (!address || address.trim().length === 0) {
+    throw new Error('Adresse vide');
+  }
+
+  // Respecter le rate limiting de Nominatim (1 requête par seconde)
+  const now = Date.now();
+  const timeSinceLastRequest = now - lastGeocodeRequest;
+  if (timeSinceLastRequest < MIN_REQUEST_INTERVAL) {
+    await new Promise(resolve => setTimeout(resolve, MIN_REQUEST_INTERVAL - timeSinceLastRequest));
+  }
+  lastGeocodeRequest = Date.now();
+
+  try {
+    // Utiliser l'API Nominatim d'OpenStreetMap
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1&addressdetails=1`,
+      {
+        headers: {
+          'User-Agent': 'RSocial App' // Nominatim nécessite un User-Agent
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Erreur lors de la géocodage. Veuillez réessayer dans quelques instants.');
+    }
+
+    const data = await response.json();
+
+    if (!data || data.length === 0) {
+      throw new Error('Adresse introuvable. Vérifiez l\'orthographe et essayez une adresse plus complète (ville, pays).');
+    }
+
+    const result = data[0];
+    return {
+      lat: parseFloat(result.lat),
+      lng: parseFloat(result.lon),
+      address: result.display_name || address
+    };
+  } catch (error) {
+    console.error('Erreur géocodage:', error);
+    if (error.message) {
+      throw error;
+    }
+    throw new Error('Impossible de géocoder l\'adresse. Vérifiez que l\'adresse est correcte et votre connexion internet.');
+  }
+};
+
