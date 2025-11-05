@@ -48,16 +48,38 @@ const Login = ({ onToggleMode }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!validate()) return;
+    console.log('[Login] Début de la soumission du formulaire');
+    console.log('[Login] Données du formulaire:', {
+      email: formData.email,
+      phone: formData.phone,
+      passwordLength: formData.password.length,
+      hasPassword: !!formData.password
+    });
     
-    setLoading(true);
-    const result = await login(formData.email, formData.phone, formData.password);
-    
-    if (!result.success) {
-      setErrors({ general: result.error });
+    if (!validate()) {
+      console.log('[Login] Validation échouée');
+      return;
     }
     
-    setLoading(false);
+    console.log('[Login] Validation réussie, tentative de connexion...');
+    setLoading(true);
+    
+    try {
+      const result = await login(formData.email, formData.phone, formData.password);
+      console.log('[Login] Résultat de la connexion:', result);
+      
+      if (!result.success) {
+        console.error('[Login] Échec de la connexion:', result.error);
+        setErrors({ general: result.error });
+      } else {
+        console.log('[Login] Connexion réussie!');
+      }
+    } catch (error) {
+      console.error('[Login] Erreur lors de la connexion:', error);
+      setErrors({ general: 'Erreur lors de la connexion' });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -83,6 +105,7 @@ const Login = ({ onToggleMode }) => {
               value={formData.email}
               onChange={handleChange}
               placeholder="votre@email.com"
+              autoComplete="email"
               disabled={loading}
             />
             {errors.email && <span className="error-text">{errors.email}</span>}
@@ -101,6 +124,7 @@ const Login = ({ onToggleMode }) => {
               value={formData.phone}
               onChange={handleChange}
               placeholder="+33 6 12 34 56 78"
+              autoComplete="tel"
               disabled={loading}
             />
             {errors.phone && <span className="error-text">{errors.phone}</span>}
@@ -115,6 +139,7 @@ const Login = ({ onToggleMode }) => {
               value={formData.password}
               onChange={handleChange}
               placeholder="••••••••"
+              autoComplete="current-password"
               disabled={loading}
             />
             {errors.password && <span className="error-text">{errors.password}</span>}
