@@ -197,7 +197,7 @@ const Register = ({ onToggleMode }) => {
     <div className="auth-container">
       <div className="auth-image-section">
         <div className="auth-image-content">
-          <h1>🏘️ RSocial</h1>
+          <h1>RSocial</h1>
           <h2>Commencez votre aventure</h2>
           <p>Créez votre compte et découvrez votre quartier sous un nouvel angle</p>
           <div className="auth-image-visual">
@@ -250,7 +250,7 @@ const Register = ({ onToggleMode }) => {
       <div className="auth-form-section">
         <div className="auth-card">
           <div className="auth-header">
-            <h1>🏘️ RSocial</h1>
+            <h1>RSocial</h1>
             <h2>Inscription</h2>
             <p>Rejoignez votre communauté locale</p>
           </div>

@@ -91,7 +91,7 @@ const Login = ({ onToggleMode }) => {
     <div className="auth-container">
       <div className="auth-image-section">
         <div className="auth-image-content">
-          <h1>🏘️ RSocial</h1>
+          <h1>RSocial</h1>
           <h2>Bienvenue !</h2>
           <p>Rejoignez votre communauté locale et connectez-vous avec vos voisins</p>
           <div className="auth-image-visual">
@@ -132,7 +132,7 @@ const Login = ({ onToggleMode }) => {
       <div className="auth-form-section">
         <div className="auth-card">
           <div className="auth-header">
-            <h1>🏘️ RSocial</h1>
+            <h1>RSocial</h1>
             <h2>Connexion</h2>
             <p>Connectez-vous pour rejoindre votre communauté locale</p>
           </div>
