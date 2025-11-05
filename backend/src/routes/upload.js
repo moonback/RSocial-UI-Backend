@@ -8,10 +8,44 @@ const router = express.Router();
 
 // Configuration multer pour gérer l'upload
 const storage = multer.memoryStorage();
+
+// Configuration pour les images (limite plus petite)
+const uploadImage = multer({
+  storage,
+  limits: {
+    fileSize: parseInt(process.env.MAX_IMAGE_SIZE) || 10 * 1024 * 1024, // 10MB pour les images
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Type de fichier image non autorisé'));
+    }
+  }
+});
+
+// Configuration pour les vidéos (limite plus grande)
+const uploadVideo = multer({
+  storage,
+  limits: {
+    fileSize: parseInt(process.env.MAX_VIDEO_SIZE) || 100 * 1024 * 1024, // 100MB pour les vidéos
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo'];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Type de fichier vidéo non autorisé'));
+    }
+  }
+});
+
+// Configuration générale (pour compatibilité)
 const upload = multer({
   storage,
   limits: {
-    fileSize: parseInt(process.env.MAX_FILE_SIZE) || 50 * 1024 * 1024, // 50MB par défaut
+    fileSize: parseInt(process.env.MAX_FILE_SIZE) || 100 * 1024 * 1024, // 100MB par défaut
   },
   fileFilter: (req, file, cb) => {
     const allowedTypes = (process.env.ALLOWED_FILE_TYPES || 'image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm,video/quicktime').split(',');
@@ -24,7 +58,7 @@ const upload = multer({
 });
 
 // Upload d'image
-router.post('/image', authenticate, upload.single('image'), async (req, res) => {
+router.post('/image', authenticate, uploadImage.single('image'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'Aucun fichier fourni' });
@@ -110,11 +144,32 @@ router.post('/images', authenticate, upload.array('images', 10), async (req, res
 });
 
 // Upload de vidéo
-router.post('/video', authenticate, upload.single('video'), async (req, res) => {
+router.post('/video', authenticate, (req, res, next) => {
+  uploadVideo.single('video')(req, res, (err) => {
+    if (err) {
+      if (err instanceof multer.MulterError) {
+        if (err.code === 'LIMIT_FILE_SIZE') {
+          return res.status(413).json({
+            error: 'Fichier trop volumineux. Taille maximale : 100MB'
+          });
+        }
+        return res.status(400).json({
+          error: `Erreur upload: ${err.message}`
+        });
+      }
+      return res.status(400).json({
+        error: err.message || 'Erreur lors de l\'upload'
+      });
+    }
+    next();
+  });
+}, async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'Aucun fichier fourni' });
     }
+
+    console.log(`Upload vidéo: ${req.file.originalname}, Taille: ${(req.file.size / 1024 / 1024).toFixed(2)}MB`);
 
     const fileExt = req.file.originalname.split('.').pop();
     const fileName = `${uuidv4()}.${fileExt}`;
@@ -129,6 +184,7 @@ router.post('/video', authenticate, upload.single('video'), async (req, res) => 
       });
 
     if (error) {
+      console.error('Erreur Supabase upload:', error);
       throw error;
     }
 
