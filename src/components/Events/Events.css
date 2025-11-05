@@ -9,32 +9,38 @@
 
 .events-header h2 {
   font-size: 28px;
-  margin: 0 0 8px 0;
-  color: #1f2937;
+  margin: 0 0 var(--space-xs) 0;
+  color: var(--text-primary);
+  font-weight: var(--font-weight-bold);
 }
 
 .events-header p {
-  color: #6b7280;
+  color: var(--text-tertiary);
   margin: 0;
+  font-size: 15px;
 }
 
 .create-event-button {
   width: 100%;
   max-width: 400px;
-  padding: 16px;
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-  color: white;
+  padding: var(--space-md);
+  background: var(--color-primary);
+  color: var(--color-secondary);
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
   font-size: 16px;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  margin-bottom: 20px;
-  transition: transform 0.2s;
+  margin-bottom: var(--space-md);
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
+  font-family: var(--font-family);
 }
 
 .create-event-button:hover {
+  background: var(--color-gray-800);
   transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .events-filters {
@@ -50,54 +56,59 @@
   gap: 20px;
 }
 
-/* Event Card */
+/* Event Card - Uber Style */
 .event-card {
-  background: white;
-  border-radius: 12px;
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+  border: 1px solid var(--border-color);
 }
 
 .event-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-gray-200);
 }
 
 .event-image {
   height: 200px;
   background-size: cover;
   background-position: center;
-  background-color: #f3f4f6;
+  background-color: var(--color-gray-50);
 }
 
 .event-content {
-  padding: 20px;
+  padding: var(--space-md);
 }
 
 .event-date-badge {
   display: inline-block;
-  padding: 6px 12px;
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-  color: white;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 12px;
+  padding: 4px 12px;
+  background: rgba(0, 200, 83, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--color-accent);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-sm);
+  border: 1px solid rgba(0, 200, 83, 0.2);
 }
 
 .event-title {
-  font-size: 22px;
-  font-weight: 600;
-  color: #1f2937;
-  margin: 0 0 12px 0;
+  font-size: 20px;
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-sm) 0;
 }
 
 .event-description {
   font-size: 15px;
-  color: #6b7280;
+  color: var(--text-secondary);
   line-height: 1.6;
-  margin: 0 0 16px 0;
+  margin: 0 0 var(--space-md) 0;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
@@ -107,18 +118,19 @@
 .event-info {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 16px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #e5e7eb;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .event-info-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-xs);
   font-size: 14px;
-  color: #374151;
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
 }
 
 .event-organizer {
@@ -131,50 +143,64 @@
 .organizer-avatar {
   width: 40px;
   height: 40px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   object-fit: cover;
+  border: 2px solid var(--color-secondary);
+  box-shadow: var(--shadow-sm);
 }
 
 .organizer-label {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--text-tertiary);
+  font-weight: var(--font-weight-medium);
 }
 
 .organizer-name {
   font-size: 14px;
-  font-weight: 600;
-  color: #1f2937;
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
 }
 
 .event-rsvp-btn {
   width: 100%;
-  padding: 14px;
+  padding: var(--space-sm) var(--space-md);
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--transition-base);
+  font-family: var(--font-family);
 }
 
 .event-rsvp-btn.btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--color-primary);
+  color: var(--color-secondary);
+  box-shadow: var(--shadow-sm);
 }
 
 .event-rsvp-btn.btn-primary:hover {
-  transform: translateY(-2px);
+  background: var(--color-gray-800);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 .event-rsvp-btn.btn-attending {
-  background-color: #10b981;
-  color: white;
+  background-color: var(--color-accent);
+  color: var(--color-secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+.event-rsvp-btn.btn-attending:hover {
+  background: #00B048;
+  transform: translateY(-1px);
 }
 
 .event-rsvp-btn.btn-disabled {
-  background-color: #e5e7eb;
-  color: #9ca3af;
+  background-color: var(--color-gray-200);
+  color: var(--text-tertiary);
   cursor: not-allowed;
+  opacity: 0.6;
 }
 
 /* Create Event Form */
@@ -197,17 +223,21 @@
 .create-event-form input,
 .create-event-form textarea {
   width: 100%;
-  padding: 12px;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
   font-size: 15px;
-  font-family: inherit;
+  font-family: var(--font-family);
+  background: var(--color-gray-50);
+  transition: all var(--transition-base);
 }
 
 .create-event-form input:focus,
 .create-event-form textarea:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: var(--color-accent);
+  background: var(--bg-primary);
+  box-shadow: 0 0 0 3px rgba(0, 200, 83, 0.1);
 }
 
 .create-event-form textarea {

@@ -142,9 +142,10 @@ const MapView = () => {
             center={mapCenter}
             radius={radiusInMeters}
             pathOptions={{
-              color: '#667eea',
-              fillColor: '#667eea',
+              color: '#00C853',
+              fillColor: '#00C853',
               fillOpacity: 0.1,
+              weight: 2,
             }}
           />
 

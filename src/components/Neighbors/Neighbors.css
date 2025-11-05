@@ -6,17 +6,13 @@
 
 .neighbors-header h1 {
   font-size: 32px;
-  margin: 0 0 8px 0;
-  color: #1f2937;
-  font-weight: 800;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  margin: 0 0 var(--space-xs) 0;
+  color: var(--text-primary);
+  font-weight: var(--font-weight-bold);
 }
 
 .neighbors-header .subtitle {
-  color: #6b7280;
+  color: var(--text-tertiary);
   margin: 0;
   font-size: 16px;
   max-width: 600px;
@@ -24,15 +20,15 @@
 
 /* Contrôles */
 .neighbors-controls {
-  background: white;
-  padding: 20px;
-  border-radius: 16px;
-  margin-bottom: 24px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
-  border: 1px solid #f3f4f6;
+  background: var(--bg-primary);
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--space-md);
 }
 
 .control-group {
@@ -61,16 +57,19 @@
 .search-bar input {
   width: 100%;
   padding: 12px 16px 12px 48px;
-  border: 2px solid #e5e7eb;
-  border-radius: 24px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
   font-size: 14px;
-  transition: all 0.3s ease;
+  transition: all var(--transition-base);
+  background: var(--color-gray-50);
+  font-family: var(--font-family);
 }
 
 .search-bar input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+  border-color: var(--color-accent);
+  background: var(--bg-primary);
+  box-shadow: 0 0 0 3px rgba(0, 200, 83, 0.1);
 }
 
 .sort-options {
@@ -83,24 +82,27 @@
 
 .sort-btn {
   padding: 8px 16px;
-  background: #f3f4f6;
-  border: 2px solid transparent;
-  border-radius: 20px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition: all 0.3s ease;
-  color: #374151;
+  transition: all var(--transition-base);
+  color: var(--text-secondary);
+  font-family: var(--font-family);
 }
 
 .sort-btn:hover {
-  background: #e5e7eb;
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+  color: var(--text-primary);
 }
 
 .sort-btn.active {
-  background: #667eea;
-  color: white;
-  border-color: #818cf8;
+  background: var(--color-primary);
+  color: var(--color-secondary);
+  border-color: var(--color-primary);
 }
 
 .radius-control {

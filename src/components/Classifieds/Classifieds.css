@@ -9,32 +9,38 @@
 
 .classifieds-header h2 {
   font-size: 28px;
-  margin: 0 0 8px 0;
-  color: #1f2937;
+  margin: 0 0 var(--space-xs) 0;
+  color: var(--text-primary);
+  font-weight: var(--font-weight-bold);
 }
 
 .classifieds-header p {
-  color: #6b7280;
+  color: var(--text-tertiary);
   margin: 0;
+  font-size: 15px;
 }
 
 .create-classified-button {
   width: 100%;
   max-width: 400px;
-  padding: 16px;
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  color: white;
+  padding: var(--space-md);
+  background: var(--color-primary);
+  color: var(--color-secondary);
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
   font-size: 16px;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  margin-bottom: 20px;
-  transition: transform 0.2s;
+  margin-bottom: var(--space-md);
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
+  font-family: var(--font-family);
 }
 
 .create-classified-button:hover {
+  background: var(--color-gray-800);
   transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .classifieds-filters {
@@ -50,18 +56,20 @@
   gap: 20px;
 }
 
-/* Classified Card */
+/* Classified Card - Uber Style */
 .classified-card {
-  background: white;
-  border-radius: 12px;
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+  border: 1px solid var(--border-color);
 }
 
 .classified-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-gray-200);
 }
 
 .classified-image {
@@ -72,7 +80,7 @@
 }
 
 .classified-no-image {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--color-gray-100);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -85,32 +93,34 @@
 
 .classified-category-badge {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  padding: 6px 12px;
-  color: white;
-  border-radius: 8px;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  padding: 4px 12px;
+  color: var(--color-secondary);
+  border-radius: var(--radius-sm);
   font-size: 12px;
-  font-weight: 600;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  font-weight: var(--font-weight-semibold);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .classified-content {
-  padding: 16px;
+  padding: var(--space-md);
 }
 
 .classified-price {
   font-size: 24px;
-  font-weight: 700;
-  color: #10b981;
-  margin-bottom: 8px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-accent);
+  margin-bottom: var(--space-xs);
 }
 
 .classified-title {
   font-size: 18px;
-  font-weight: 600;
-  color: #1f2937;
-  margin: 0 0 8px 0;
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-xs) 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -119,9 +129,9 @@
 
 .classified-description {
   font-size: 14px;
-  color: #6b7280;
-  line-height: 1.5;
-  margin: 0 0 12px 0;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0 0 var(--space-sm) 0;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
@@ -131,18 +141,19 @@
 .classified-meta {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin-bottom: 12px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #e5e7eb;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .meta-item {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-xs);
   font-size: 13px;
-  color: #6b7280;
+  color: var(--text-tertiary);
+  font-weight: var(--font-weight-medium);
 }
 
 .meta-icon {
@@ -157,45 +168,52 @@
 }
 
 .seller-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
   object-fit: cover;
+  border: 2px solid var(--color-secondary);
+  box-shadow: var(--shadow-sm);
 }
 
 .seller-name {
   font-size: 14px;
-  font-weight: 500;
-  color: #374151;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
 }
 
 .classified-action-btn {
   width: 100%;
-  padding: 12px;
+  padding: var(--space-sm) var(--space-md);
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: 15px;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--transition-base);
+  font-family: var(--font-family);
 }
 
 .classified-action-btn.btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--color-primary);
+  color: var(--color-secondary);
+  box-shadow: var(--shadow-sm);
 }
 
 .classified-action-btn.btn-primary:hover {
-  transform: translateY(-2px);
+  background: var(--color-gray-800);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 .classified-action-btn.btn-delete {
-  background-color: #fee2e2;
-  color: #dc2626;
+  background-color: rgba(234, 67, 53, 0.1);
+  color: var(--error-color);
+  border: 1px solid var(--error-color);
 }
 
 .classified-action-btn.btn-delete:hover {
-  background-color: #fecaca;
+  background-color: rgba(234, 67, 53, 0.15);
 }
 
 /* Create Classified Form */
@@ -218,17 +236,21 @@
 .create-classified-form input,
 .create-classified-form textarea {
   width: 100%;
-  padding: 12px;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
   font-size: 15px;
-  font-family: inherit;
+  font-family: var(--font-family);
+  background: var(--color-gray-50);
+  transition: all var(--transition-base);
 }
 
 .create-classified-form input:focus,
 .create-classified-form textarea:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: var(--color-accent);
+  background: var(--bg-primary);
+  box-shadow: 0 0 0 3px rgba(0, 200, 83, 0.1);
 }
 
 .create-classified-form textarea {
