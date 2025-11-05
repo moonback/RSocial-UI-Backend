@@ -22,10 +22,6 @@ const AppContent = () => {
   const [authMode, setAuthMode] = useState('login');
   const [currentView, setCurrentView] = useState('feed');
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
-    const saved = localStorage.getItem('sidebarCollapsed');
-    return saved ? JSON.parse(saved) : false;
-  });
 
   if (loading) {
     return (
@@ -72,7 +68,7 @@ const AppContent = () => {
   };
 
   return (
-    <div className={`app ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+    <div className="app">
       <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
       <div className="app-body">
         <Sidebar
@@ -80,12 +76,6 @@ const AppContent = () => {
           onViewChange={setCurrentView}
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
-          isCollapsed={sidebarCollapsed}
-          onToggleCollapse={() => {
-            const newState = !sidebarCollapsed;
-            setSidebarCollapsed(newState);
-            localStorage.setItem('sidebarCollapsed', JSON.stringify(newState));
-          }}
         />
         <main className="main-content">
           {renderView()}

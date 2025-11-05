@@ -2,7 +2,7 @@ import React from 'react';
 import { useApp } from '../../contexts/AppContext';
 import './Layout.css';
 
-const Sidebar = ({ currentView, onViewChange, isOpen, onClose, isCollapsed, onToggleCollapse }) => {
+const Sidebar = ({ currentView, onViewChange, isOpen, onClose }) => {
   const { notifications, posts, messages } = useApp();
   
   const unreadNotifications = notifications.filter(n => !n.read).length;
@@ -26,16 +26,7 @@ const Sidebar = ({ currentView, onViewChange, isOpen, onClose, isCollapsed, onTo
     <>
       {isOpen && <div className="sidebar-overlay" onClick={onClose} />}
       
-      <aside className={`sidebar ${isOpen ? 'sidebar-open' : ''} ${isCollapsed ? 'sidebar-collapsed' : ''}`}>
-        <div className="sidebar-header">
-          <button
-            className="sidebar-toggle-btn"
-            onClick={onToggleCollapse}
-            title={isCollapsed ? 'Déplier la sidebar' : 'Replier la sidebar'}
-          >
-            {isCollapsed ? '▶' : '◀'}
-          </button>
-        </div>
+      <aside className={`sidebar ${isOpen ? 'sidebar-open' : ''}`}>
         <nav className="sidebar-nav">
           {menuItems.map((item) => (
             <button
