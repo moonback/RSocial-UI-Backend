@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useApp } from '../../contexts/AppContext';
+import postService from '../../services/postService';
 import { filterByDistance } from '../../utils/geolocation';
 import PostCard from './PostCard';
 import CreatePost from './CreatePost';
@@ -8,9 +8,38 @@ import './Feed.css';
 
 const Feed = () => {
   const { user } = useAuth();
-  const { posts } = useApp();
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
   const [showCreatePost, setShowCreatePost] = useState(false);
+
+  // Charger les posts depuis l'API
+  useEffect(() => {
+    loadPosts();
+  }, [user.location, user.radius, filter]);
+
+  const loadPosts = async () => {
+    try {
+      setLoading(true);
+      const fetchedPosts = await postService.getPosts(
+        user.location.lat,
+        user.location.lng,
+        user.radius,
+        filter
+      );
+      setPosts(fetchedPosts);
+    } catch (error) {
+      console.error('Erreur chargement posts:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePostCreated = () => {
+    // Recharger les posts après création
+    loadPosts();
+    setShowCreatePost(false);
+  };
 
   const filteredPosts = useMemo(() => {
     // Filtrer par distance
@@ -62,7 +91,12 @@ const Feed = () => {
       </div>
 
       <div className="posts-list">
-        {filteredPosts.length === 0 ? (
+        {loading ? (
+          <div className="loading-container">
+            <div className="spinner"></div>
+            <p className="loading-text">Chargement des publications...</p>
+          </div>
+        ) : filteredPosts.length === 0 ? (
           <div className="empty-state">
             <div className="empty-state-icon">📭</div>
             <h3>Aucune publication</h3>
@@ -70,13 +104,13 @@ const Feed = () => {
           </div>
         ) : (
           filteredPosts.map(post => (
-            <PostCard key={post.id} post={post} />
+            <PostCard key={post.id} post={post} onPostDeleted={loadPosts} />
           ))
         )}
       </div>
 
       {showCreatePost && (
-        <CreatePost onClose={() => setShowCreatePost(false)} />
+        <CreatePost onClose={() => setShowCreatePost(false)} onPostCreated={handlePostCreated} />
       )}
     </div>
   );

@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useApp } from '../../contexts/AppContext';
+import postService from '../../services/postService';
 import { formatRelativeTime } from '../../utils/dateUtils';
 import { calculateDistance, formatDistance } from '../../utils/geolocation';
 import './Feed.css';
 
-const PostCard = ({ post }) => {
+const PostCard = ({ post, onPostDeleted }) => {
   const { user } = useAuth();
-  const { likePost, addComment, deletePost, reportContent } = useApp();
+  const { reportContent } = useApp();
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [showMenu, setShowMenu] = useState(false);
+  const [isLiked, setIsLiked] = useState(post.likedBy?.includes(user.id) || false);
+  const [likesCount, setLikesCount] = useState(post.likes || 0);
+  const [comments, setComments] = useState(post.comments || []);
 
   const distance = calculateDistance(
     user.location.lat,
@@ -19,29 +23,43 @@ const PostCard = ({ post }) => {
     post.location.lng
   );
 
-  const isLiked = post.likedBy.includes(user.id);
-  const isMyPost = post.userId === user.id;
+  const isMyPost = post.user_id === user.id || post.userId === user.id;
 
-  const handleLike = () => {
-    likePost(post.id, user.id);
-  };
-
-  const handleComment = (e) => {
-    e.preventDefault();
-    if (commentText.trim()) {
-      addComment(post.id, {
-        userId: user.id,
-        userName: user.name,
-        userAvatar: user.avatar,
-        content: commentText,
-      });
-      setCommentText('');
+  const handleLike = async () => {
+    try {
+      const result = await postService.likePost(post.id);
+      setIsLiked(result.liked);
+      setLikesCount(prev => result.liked ? prev + 1 : prev - 1);
+    } catch (error) {
+      console.error('Erreur like:', error);
     }
   };
 
-  const handleDelete = () => {
+  const handleComment = async (e) => {
+    e.preventDefault();
+    if (commentText.trim()) {
+      try {
+        const newComment = await postService.addComment(post.id, commentText);
+        setComments([...comments, newComment]);
+        setCommentText('');
+      } catch (error) {
+        console.error('Erreur commentaire:', error);
+        alert('Erreur lors de l\'ajout du commentaire');
+      }
+    }
+  };
+
+  const handleDelete = async () => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer cette publication ?')) {
-      deletePost(post.id);
+      try {
+        await postService.deletePost(post.id);
+        if (onPostDeleted) {
+          onPostDeleted();
+        }
+      } catch (error) {
+        console.error('Erreur suppression:', error);
+        alert('Erreur lors de la suppression du post');
+      }
     }
   };
 
@@ -72,11 +90,11 @@ const PostCard = ({ post }) => {
     <div className="post-card">
       <div className="post-header">
         <div className="post-user-info">
-          <img src={post.userAvatar} alt={post.userName} className="post-avatar" />
+          <img src={post.users?.avatar || post.userAvatar} alt={post.users?.name || post.userName} className="post-avatar" />
           <div>
-            <div className="post-user-name">{post.userName}</div>
+            <div className="post-user-name">{post.users?.name || post.userName}</div>
             <div className="post-meta">
-              {formatRelativeTime(post.createdAt)} • {formatDistance(distance)}
+              {formatRelativeTime(post.created_at || post.createdAt)} • {formatDistance(distance)}
             </div>
           </div>
         </div>
@@ -114,8 +132,8 @@ const PostCard = ({ post }) => {
       </div>
 
       <div className="post-stats">
-        <span>{post.likes} J'aime</span>
-        <span>{post.comments.length} Commentaires</span>
+        <span>{likesCount} J'aime</span>
+        <span>{comments.length} Commentaires</span>
       </div>
 
       <div className="post-footer">
@@ -150,14 +168,14 @@ const PostCard = ({ post }) => {
           </form>
 
           <div className="comments-list">
-            {post.comments.map((comment) => (
+            {comments.map((comment) => (
               <div key={comment.id} className="comment">
-                <img src={comment.userAvatar} alt={comment.userName} className="comment-avatar" />
+                <img src={comment.user?.avatar || comment.userAvatar} alt={comment.user?.name || comment.userName} className="comment-avatar" />
                 <div className="comment-content">
                   <div className="comment-header">
-                    <span className="comment-user">{comment.userName}</span>
+                    <span className="comment-user">{comment.user?.name || comment.userName}</span>
                     <span className="comment-time">
-                      {formatRelativeTime(comment.createdAt)}
+                      {formatRelativeTime(comment.created_at || comment.createdAt)}
                     </span>
                   </div>
                   <p className="comment-text">{comment.content}</p>

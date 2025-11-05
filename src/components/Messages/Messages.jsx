@@ -1,75 +1,91 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useApp } from '../../contexts/AppContext';
+import messageService from '../../services/messageService';
 import { formatRelativeTime } from '../../utils/dateUtils';
 import './Messages.css';
 
 const Messages = () => {
   const { user } = useAuth();
-  const { messages, sendMessage, markMessageAsRead, blockUser, reportContent } = useApp();
+  const { blockUser, reportContent } = useApp();
+  const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [messageText, setMessageText] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
 
-  // Grouper les messages par conversation
-  const conversations = useMemo(() => {
-    const convMap = new Map();
-
-    messages.forEach(msg => {
-      const otherId = msg.senderId === user.id ? msg.receiverId : msg.senderId;
-      const otherName = msg.senderId === user.id ? msg.receiverName : msg.senderName;
-
-      if (!convMap.has(otherId)) {
-        convMap.set(otherId, {
-          userId: otherId,
-          userName: otherName,
-          messages: [],
-        });
-      }
-
-      convMap.get(otherId).messages.push(msg);
+  // Charger les conversations depuis l'API
+  useEffect(() => {
+    loadConversations();
+    
+    // Écouter les nouveaux messages via WebSocket
+    messageService.onNewMessage((newMessage) => {
+      // Recharger les conversations quand un nouveau message arrive
+      loadConversations();
     });
+  }, []);
 
-    // Trier les messages de chaque conversation
-    convMap.forEach(conv => {
-      conv.messages.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-      conv.lastMessage = conv.messages[conv.messages.length - 1];
-      conv.unreadCount = conv.messages.filter(m => !m.read && m.senderId !== user.id).length;
-    });
+  const loadConversations = async () => {
+    try {
+      setLoading(true);
+      const fetchedConversations = await messageService.getConversations();
+      setConversations(fetchedConversations);
+    } catch (error) {
+      console.error('Erreur chargement conversations:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    // Convertir en tableau et trier par dernier message
-    return Array.from(convMap.values()).sort((a, b) =>
-      new Date(b.lastMessage.createdAt) - new Date(a.lastMessage.createdAt)
-    );
-  }, [messages, user.id]);
-
-  const handleSendMessage = (e) => {
+  const handleSendMessage = async (e) => {
     e.preventDefault();
 
     if (!messageText.trim() || !selectedConversation) return;
 
-    sendMessage({
-      senderId: user.id,
-      senderName: user.name,
-      receiverId: selectedConversation.userId,
-      receiverName: selectedConversation.userName,
-      content: messageText,
-    });
+    try {
+      setSending(true);
+      await messageService.sendMessage(selectedConversation.userId, messageText);
+      
+      // Recharger les conversations pour avoir le nouveau message
+      await loadConversations();
+      
+      // Mettre à jour la conversation sélectionnée
+      const updatedConversation = conversations.find(c => c.userId === selectedConversation.userId);
+      if (updatedConversation) {
+        setSelectedConversation(updatedConversation);
+      }
 
-    setMessageText('');
+      setMessageText('');
+    } catch (error) {
+      console.error('Erreur envoi message:', error);
+      alert('Erreur lors de l\'envoi du message');
+    } finally {
+      setSending(false);
+    }
   };
 
-  const handleSelectConversation = (conversation) => {
+  const handleSelectConversation = async (conversation) => {
     setSelectedConversation(conversation);
+    
     // Marquer les messages comme lus
-    conversation.messages.forEach(msg => {
-      if (!msg.read && msg.senderId !== user.id) {
-        markMessageAsRead(msg.id);
+    const unreadMessages = conversation.messages.filter(
+      m => !m.read && m.receiver_id === user.id
+    );
+    
+    for (const msg of unreadMessages) {
+      try {
+        await messageService.markAsRead(msg.id);
+      } catch (error) {
+        console.error('Erreur marquage lu:', error);
       }
-    });
+    }
+    
+    // Recharger pour mettre à jour les compteurs
+    loadConversations();
   };
 
   const handleBlock = () => {
-    if (window.confirm(`Êtes-vous sûr de vouloir bloquer ${selectedConversation.userName} ?`)) {
+    if (window.confirm(`Êtes-vous sûr de vouloir bloquer ${selectedConversation.user.name} ?`)) {
       blockUser(selectedConversation.userId);
       setSelectedConversation(null);
       alert('Utilisateur bloqué');
@@ -99,7 +115,12 @@ const Messages = () => {
       <div className="messages-layout">
         {/* Liste des conversations */}
         <div className="conversations-list">
-          {conversations.length === 0 ? (
+          {loading ? (
+            <div className="loading-container">
+              <div className="spinner"></div>
+              <p className="loading-text">Chargement...</p>
+            </div>
+          ) : conversations.length === 0 ? (
             <div className="empty-state-small">
               <div className="empty-state-icon">💬</div>
               <p>Aucun message</p>
@@ -112,20 +133,20 @@ const Messages = () => {
                 onClick={() => handleSelectConversation(conv)}
               >
                 <img
-                  src={`https://ui-avatars.com/api/?name=${conv.userName}&background=random`}
-                  alt={conv.userName}
+                  src={conv.user?.avatar || `https://ui-avatars.com/api/?name=${conv.user?.name || conv.userName}&background=random`}
+                  alt={conv.user?.name || conv.userName}
                   className="conversation-avatar"
                 />
                 <div className="conversation-info">
-                  <div className="conversation-name">{conv.userName}</div>
+                  <div className="conversation-name">{conv.user?.name || conv.userName}</div>
                   <div className="conversation-preview">
-                    {conv.lastMessage.content.substring(0, 50)}
-                    {conv.lastMessage.content.length > 50 ? '...' : ''}
+                    {conv.lastMessage?.content.substring(0, 50)}
+                    {conv.lastMessage?.content.length > 50 ? '...' : ''}
                   </div>
                 </div>
                 <div className="conversation-meta">
                   <div className="conversation-time">
-                    {formatRelativeTime(conv.lastMessage.createdAt)}
+                    {formatRelativeTime(conv.lastMessage?.created_at || conv.lastMessage?.createdAt)}
                   </div>
                   {conv.unreadCount > 0 && (
                     <div className="conversation-badge">{conv.unreadCount}</div>
@@ -143,11 +164,11 @@ const Messages = () => {
               <div className="conversation-header">
                 <div className="conversation-header-user">
                   <img
-                    src={`https://ui-avatars.com/api/?name=${selectedConversation.userName}&background=random`}
-                    alt={selectedConversation.userName}
+                    src={selectedConversation.user?.avatar || `https://ui-avatars.com/api/?name=${selectedConversation.user?.name || selectedConversation.userName}&background=random`}
+                    alt={selectedConversation.user?.name || selectedConversation.userName}
                     className="conversation-avatar"
                   />
-                  <span>{selectedConversation.userName}</span>
+                  <span>{selectedConversation.user?.name || selectedConversation.userName}</span>
                 </div>
                 <div className="conversation-actions">
                   <button className="action-btn" onClick={handleReport} title="Signaler">
@@ -163,11 +184,11 @@ const Messages = () => {
                 {selectedConversation.messages.map(msg => (
                   <div
                     key={msg.id}
-                    className={`message-bubble ${msg.senderId === user.id ? 'message-sent' : 'message-received'}`}
+                    className={`message-bubble ${(msg.sender_id || msg.senderId) === user.id ? 'message-sent' : 'message-received'}`}
                   >
                     <div className="message-content">{msg.content}</div>
                     <div className="message-time">
-                      {formatRelativeTime(msg.createdAt)}
+                      {formatRelativeTime(msg.created_at || msg.createdAt)}
                     </div>
                   </div>
                 ))}
@@ -180,9 +201,10 @@ const Messages = () => {
                   onChange={(e) => setMessageText(e.target.value)}
                   placeholder="Écrivez votre message..."
                   className="message-input"
+                  disabled={sending}
                 />
-                <button type="submit" className="message-send-btn">
-                  ➤
+                <button type="submit" className="message-send-btn" disabled={sending}>
+                  {sending ? '⏳' : '➤'}
                 </button>
               </form>
             </>

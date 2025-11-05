@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { supabase } from '../config/supabase.js';
+import { supabaseAdmin } from '../config/supabase.js';
 import { authenticate } from '../middleware/auth.js';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -35,7 +35,7 @@ router.post('/image', authenticate, upload.single('image'), async (req, res) => 
     const filePath = `images/${fileName}`;
 
     // Upload vers Supabase Storage
-    const { data, error } = await supabase.storage
+    const { data, error } = await supabaseAdmin.storage
       .from('rsocial-uploads')
       .upload(filePath, req.file.buffer, {
         contentType: req.file.mimetype,
@@ -47,7 +47,7 @@ router.post('/image', authenticate, upload.single('image'), async (req, res) => 
     }
 
     // Récupérer l'URL publique
-    const { data: publicUrlData } = supabase.storage
+    const { data: publicUrlData } = supabaseAdmin.storage
       .from('rsocial-uploads')
       .getPublicUrl(filePath);
 
@@ -76,7 +76,7 @@ router.post('/images', authenticate, upload.array('images', 10), async (req, res
       const fileName = `${uuidv4()}.${fileExt}`;
       const filePath = `images/${fileName}`;
 
-      const { error } = await supabase.storage
+      const { error } = await supabaseAdmin.storage
         .from('rsocial-uploads')
         .upload(filePath, file.buffer, {
           contentType: file.mimetype,
@@ -85,7 +85,7 @@ router.post('/images', authenticate, upload.array('images', 10), async (req, res
 
       if (error) throw error;
 
-      const { data: publicUrlData } = supabase.storage
+      const { data: publicUrlData } = supabaseAdmin.storage
         .from('rsocial-uploads')
         .getPublicUrl(filePath);
 
