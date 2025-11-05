@@ -23,12 +23,16 @@ router.post('/register',
 );
 
 // Connexion
-router.post('/login',
-  [
-    body('password').notEmpty().withMessage('Mot de passe requis')
-  ],
-  login
-);
+router.post('/login', (req, res, next) => {
+  console.log('[authRoute] Requête POST /login reçue');
+  console.log('[authRoute] Body:', {
+    ...req.body,
+    password: req.body.password ? `[${req.body.password.length} caractères]` : '(vide)'
+  });
+  next();
+}, [
+  body('password').notEmpty().withMessage('Mot de passe requis')
+], login);
 
 // Profil
 router.get('/me', authenticate, getMe);

@@ -122,6 +122,7 @@ const Register = ({ onToggleMode }) => {
               value={formData.name}
               onChange={handleChange}
               placeholder="Jean Dupont"
+              autoComplete="name"
               disabled={loading}
             />
             {errors.name && <span className="error-text">{errors.name}</span>}
@@ -136,6 +137,7 @@ const Register = ({ onToggleMode }) => {
               value={formData.email}
               onChange={handleChange}
               placeholder="votre@email.com"
+              autoComplete="email"
               disabled={loading}
             />
             {errors.email && <span className="error-text">{errors.email}</span>}
@@ -150,6 +152,7 @@ const Register = ({ onToggleMode }) => {
               value={formData.phone}
               onChange={handleChange}
               placeholder="+33 6 12 34 56 78"
+              autoComplete="tel"
               disabled={loading}
             />
             {errors.phone && <span className="error-text">{errors.phone}</span>}
@@ -164,6 +167,7 @@ const Register = ({ onToggleMode }) => {
               value={formData.password}
               onChange={handleChange}
               placeholder="••••••••"
+              autoComplete="new-password"
               disabled={loading}
             />
             {errors.password && <span className="error-text">{errors.password}</span>}
@@ -179,6 +183,7 @@ const Register = ({ onToggleMode }) => {
                 value={formData.address}
                 onChange={handleChange}
                 placeholder="15 Rue de la Paix, Paris"
+                autoComplete="street-address"
                 disabled={loading}
               />
               <button

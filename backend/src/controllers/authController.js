@@ -78,45 +78,141 @@ export const register = async (req, res) => {
 // Connexion
 export const login = async (req, res) => {
   try {
+    console.log('[authController] ===== DÉBUT LOGIN =====');
+    console.log('[authController] Requête reçue:', {
+      method: req.method,
+      url: req.url,
+      body: {
+        ...req.body,
+        password: req.body.password ? `[${req.body.password.length} caractères]` : '(vide)'
+      }
+    });
+
     const { email, phone, password } = req.body;
 
+    console.log('[authController] Données extraites:', {
+      email: email || '(vide)',
+      phone: phone || '(vide)',
+      passwordLength: password?.length || 0,
+      hasPassword: !!password
+    });
+
     if (!email && !phone) {
+      console.log('[authController] ERREUR: Email et téléphone manquants');
       return res.status(400).json({
         error: 'Email ou téléphone requis'
       });
     }
 
     // Trouver l'utilisateur
-    let query = supabaseAdmin.from('users').select('*');
+    console.log('[authController] Recherche de l\'utilisateur...');
+    let user = null;
+    let queryError = null;
     
     if (email) {
-      query = query.eq('email', email);
+      // Normaliser l'email (minuscules, sans espaces)
+      const normalizedEmail = email.toLowerCase().trim();
+      console.log('[authController] Recherche par email:', email);
+      console.log('[authController] Email normalisé:', normalizedEmail);
+      
+      // Récupérer tous les utilisateurs et chercher avec comparaison insensible à la casse
+      // (Plus sûr que de compter sur la casse exacte dans la base de données)
+      const { data: allUsers, error: fetchError } = await supabaseAdmin
+        .from('users')
+        .select('*');
+      
+      if (fetchError) {
+        console.log('[authController] Erreur lors de la récupération des utilisateurs:', fetchError);
+        queryError = fetchError;
+      } else {
+        // Chercher l'utilisateur avec email insensible à la casse
+        user = allUsers?.find(u => 
+          u.email && u.email.toLowerCase().trim() === normalizedEmail
+        );
+        
+        if (user) {
+          console.log('[authController] Utilisateur trouvé avec recherche insensible à la casse');
+          console.log('[authController] Email trouvé dans la base:', user.email);
+        } else {
+          console.log('[authController] Aucun utilisateur trouvé avec cet email');
+          console.log('[authController] Emails disponibles (premiers 5):', 
+            allUsers?.slice(0, 5).map(u => u.email).join(', ') || 'Aucun utilisateur dans la base'
+          );
+        }
+      }
     } else {
-      query = query.eq('phone', phone);
+      console.log('[authController] Recherche par téléphone:', phone);
+      // Normaliser le téléphone (supprimer les espaces)
+      const normalizedPhone = phone.replace(/\s+/g, '').trim();
+      const { data: foundUser, error: phoneError } = await supabaseAdmin
+        .from('users')
+        .select('*')
+        .eq('phone', normalizedPhone)
+        .single();
+      
+      user = foundUser;
+      queryError = phoneError;
     }
 
-    const { data: user, error } = await query.single();
+    console.log('[authController] Résultat de la requête Supabase:', {
+      hasUser: !!user,
+      userId: user?.id,
+      userEmail: user?.email,
+      userPhone: user?.phone,
+      hasPassword: !!user?.password,
+      error: queryError
+    });
 
-    if (error || !user) {
+    if (queryError || !user) {
+      console.log('[authController] ERREUR: Utilisateur non trouvé');
+      console.log('[authController] Détails de l\'erreur:', queryError);
+      console.log('[authController] Suggestion: Vérifiez que l\'utilisateur existe dans la base de données');
+      
+      // Si c'est une erreur PGRST116 (aucun résultat), suggérer de créer un compte
+      if (queryError?.code === 'PGRST116') {
+        console.log('[authController] L\'email ou le téléphone n\'existe pas dans la base de données');
+        console.log('[authController] Email recherché:', email || '(vide)');
+        console.log('[authController] Téléphone recherché:', phone || '(vide)');
+      }
+      
+      return res.status(401).json({
+        error: 'Identifiants invalides - Email ou mot de passe incorrect'
+      });
+    }
+
+    if (!user.password) {
+      console.log('[authController] ERREUR: Utilisateur sans mot de passe');
       return res.status(401).json({
         error: 'Identifiants invalides'
       });
     }
 
     // Vérifier le mot de passe
+    console.log('[authController] Vérification du mot de passe...');
+    console.log('[authController] Mot de passe reçu:', password ? `[${password.length} caractères]` : '(vide)');
+    console.log('[authController] Hash stocké:', user.password ? `[${user.password.substring(0, 20)}...]` : '(vide)');
+    
     const isValidPassword = await bcrypt.compare(password, user.password);
 
+    console.log('[authController] Résultat de la comparaison:', isValidPassword);
+
     if (!isValidPassword) {
+      console.log('[authController] ERREUR: Mot de passe invalide');
       return res.status(401).json({
         error: 'Identifiants invalides'
       });
     }
 
     // Générer le token
+    console.log('[authController] Génération du token JWT...');
     const token = generateToken(user.id);
+    console.log('[authController] Token généré:', token ? `[${token.substring(0, 20)}...]` : '(vide)');
 
     // Ne pas renvoyer le mot de passe
     delete user.password;
+
+    console.log('[authController] Connexion réussie pour l\'utilisateur:', user.id);
+    console.log('[authController] ===== FIN LOGIN (SUCCÈS) =====');
 
     res.json({
       message: 'Connexion réussie',
@@ -124,7 +220,11 @@ export const login = async (req, res) => {
       user
     });
   } catch (error) {
-    console.error('Erreur connexion:', error);
+    console.error('[authController] ===== ERREUR LOGIN =====');
+    console.error('[authController] Type d\'erreur:', error.constructor.name);
+    console.error('[authController] Message:', error.message);
+    console.error('[authController] Stack:', error.stack);
+    console.error('[authController] ===== FIN ERREUR =====');
     res.status(500).json({
       error: 'Erreur lors de la connexion'
     });

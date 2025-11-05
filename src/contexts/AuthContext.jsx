@@ -38,23 +38,59 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, phone, password) => {
     try {
-      const { data } = await api.post('/auth/login', {
+      console.log('[AuthContext] Début de la fonction login');
+      console.log('[AuthContext] Paramètres reçus:', {
+        email: email || '(vide)',
+        phone: phone || '(vide)',
+        passwordLength: password?.length || 0,
+        hasPassword: !!password
+      });
+      
+      const requestData = {
         email,
         phone,
         password
+      };
+      console.log('[AuthContext] Données de la requête:', {
+        ...requestData,
+        password: password ? `[${password.length} caractères]` : '(vide)'
+      });
+      
+      console.log('[AuthContext] URL de l\'API:', api.defaults.baseURL);
+      console.log('[AuthContext] Envoi de la requête POST /auth/login...');
+      
+      const response = await api.post('/auth/login', requestData);
+      
+      console.log('[AuthContext] Réponse reçue:', {
+        status: response.status,
+        hasToken: !!response.data?.token,
+        hasUser: !!response.data?.user,
+        userId: response.data?.user?.id,
+        userName: response.data?.user?.name
       });
 
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      setUser(data.user);
-      socketService.connect(data.token);
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      setUser(response.data.user);
+      socketService.connect(response.data.token);
 
+      console.log('[AuthContext] Connexion réussie, utilisateur stocké');
       return { success: true };
     } catch (error) {
-      console.error('Erreur login:', error);
+      console.error('[AuthContext] Erreur lors de la connexion:');
+      console.error('[AuthContext] Type d\'erreur:', error.constructor.name);
+      console.error('[AuthContext] Message:', error.message);
+      console.error('[AuthContext] Réponse de l\'erreur:', {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        headers: error.response?.headers
+      });
+      console.error('[AuthContext] Erreur complète:', error);
+      
       return {
         success: false,
-        error: error.response?.data?.error || 'Identifiants invalides'
+        error: error.response?.data?.error || error.message || 'Identifiants invalides'
       };
     }
   };
