@@ -10,6 +10,7 @@ const Register = ({ onToggleMode }) => {
     name: '',
     email: '',
     phone: '',
+    password: '',
     address: '',
   });
   const [errors, setErrors] = useState({});
@@ -56,6 +57,10 @@ const Register = ({ onToggleMode }) => {
     if (!validatePhone(formData.phone)) {
       newErrors.phone = 'Numéro de téléphone invalide';
     }
+
+    if (!formData.password || formData.password.length < 6) {
+      newErrors.password = 'Le mot de passe doit contenir au moins 6 caractères';
+    }
     
     if (!validateRequired(formData.address)) {
       newErrors.address = 'L\'adresse est requise';
@@ -83,6 +88,7 @@ const Register = ({ onToggleMode }) => {
       formData.email,
       formData.phone,
       formData.name,
+      formData.password,
       location
     );
     
@@ -147,6 +153,20 @@ const Register = ({ onToggleMode }) => {
               disabled={loading}
             />
             {errors.phone && <span className="error-text">{errors.phone}</span>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="password">Mot de passe * (min 6 caractères)</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="••••••••"
+              disabled={loading}
+            />
+            {errors.password && <span className="error-text">{errors.password}</span>}
           </div>
 
           <div className="form-group">

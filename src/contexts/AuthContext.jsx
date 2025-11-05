@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import api from '../config/api';
+import socketService from '../services/socketService';
 
 const AuthContext = createContext(null);
 
@@ -15,83 +17,88 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Vérifier si un utilisateur est déjà connecté (localStorage)
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setLoading(false);
+    checkAuth();
   }, []);
 
-  const login = async (email, phone) => {
-    setLoading(true);
+  const checkAuth = async () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const { data } = await api.get('/auth/me');
+        setUser(data.user);
+        socketService.connect(token);
+      } catch (error) {
+        console.error('Erreur checkAuth:', error);
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      }
+    }
+    setLoading(false);
+  };
+
+  const login = async (email, phone, password) => {
     try {
-      // Simulation d'une connexion
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const newUser = {
-        id: Date.now().toString(),
+      const { data } = await api.post('/auth/login', {
         email,
         phone,
-        name: email.split('@')[0],
-        bio: '',
-        location: { lat: 48.8566, lng: 2.3522, address: 'Paris, France' },
-        radius: 3, // km
-        avatar: `https://ui-avatars.com/api/?name=${email.split('@')[0]}&background=random`,
-        createdAt: new Date().toISOString(),
-        neighbors: [],
-        posts: [],
-      };
-      
-      setUser(newUser);
-      localStorage.setItem('user', JSON.stringify(newUser));
-      setLoading(false);
+        password
+      });
+
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      setUser(data.user);
+      socketService.connect(data.token);
+
       return { success: true };
     } catch (error) {
-      setLoading(false);
-      return { success: false, error: error.message };
+      console.error('Erreur login:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || 'Identifiants invalides'
+      };
     }
   };
 
-  const register = async (email, phone, name, location) => {
-    setLoading(true);
+  const register = async (email, phone, name, password, location) => {
     try {
-      // Simulation d'une inscription
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const newUser = {
-        id: Date.now().toString(),
+      const { data } = await api.post('/auth/register', {
         email,
         phone,
-        name: name || email.split('@')[0],
-        bio: '',
-        location: location || { lat: 48.8566, lng: 2.3522, address: 'Paris, France' },
-        radius: 3,
-        avatar: `https://ui-avatars.com/api/?name=${name || email.split('@')[0]}&background=random`,
-        createdAt: new Date().toISOString(),
-        neighbors: [],
-        posts: [],
-      };
-      
-      setUser(newUser);
-      localStorage.setItem('user', JSON.stringify(newUser));
-      setLoading(false);
+        name,
+        password,
+        location
+      });
+
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      setUser(data.user);
+      socketService.connect(data.token);
+
       return { success: true };
     } catch (error) {
-      setLoading(false);
-      return { success: false, error: error.message };
+      console.error('Erreur register:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || 'Erreur lors de l\'inscription'
+      };
     }
   };
 
   const logout = () => {
-    setUser(null);
+    localStorage.removeItem('token');
     localStorage.removeItem('user');
+    socketService.disconnect();
+    setUser(null);
   };
 
-  const updateUser = (updates) => {
-    const updatedUser = { ...user, ...updates };
-    setUser(updatedUser);
-    localStorage.setItem('user', JSON.stringify(updatedUser));
+  const updateUser = async (updates) => {
+    try {
+      const { data } = await api.put('/auth/profile', updates);
+      setUser(data.user);
+      localStorage.setItem('user', JSON.stringify(data.user));
+    } catch (error) {
+      console.error('Erreur updateUser:', error);
+    }
   };
 
   const value = {

@@ -8,6 +8,7 @@ const Login = ({ onToggleMode }) => {
   const [formData, setFormData] = useState({
     email: '',
     phone: '',
+    password: '',
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -36,6 +37,10 @@ const Login = ({ onToggleMode }) => {
       newErrors.phone = 'Numéro de téléphone invalide';
     }
 
+    if (!formData.password) {
+      newErrors.password = 'Le mot de passe est requis';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -46,7 +51,7 @@ const Login = ({ onToggleMode }) => {
     if (!validate()) return;
     
     setLoading(true);
-    const result = await login(formData.email, formData.phone);
+    const result = await login(formData.email, formData.phone, formData.password);
     
     if (!result.success) {
       setErrors({ general: result.error });
@@ -99,6 +104,20 @@ const Login = ({ onToggleMode }) => {
               disabled={loading}
             />
             {errors.phone && <span className="error-text">{errors.phone}</span>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="password">Mot de passe</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="••••••••"
+              disabled={loading}
+            />
+            {errors.password && <span className="error-text">{errors.password}</span>}
           </div>
 
           <button type="submit" className="btn-primary" disabled={loading}>
