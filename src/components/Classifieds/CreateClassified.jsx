@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useApp } from '../../contexts/AppContext';
+import classifiedService from '../../services/classifiedService';
+import uploadService from '../../services/uploadService';
 import './Classifieds.css';
 
-const CreateClassified = ({ onClose }) => {
+const CreateClassified = ({ onClose, onClassifiedCreated }) => {
   const { user } = useAuth();
-  const { addClassified } = useApp();
+  const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -16,7 +18,7 @@ const CreateClassified = ({ onClose }) => {
 
   const categories = ['Vente', 'Don', 'Service', 'Recherche'];
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.title.trim() || !formData.description.trim()) {
@@ -29,25 +31,44 @@ const CreateClassified = ({ onClose }) => {
       return;
     }
 
-    addClassified({
-      ...formData,
-      price: parseFloat(formData.price),
-      userId: user.id,
-      userName: user.name,
-      userAvatar: user.avatar,
-      location: user.location,
-    });
+    try {
+      setLoading(true);
+      await classifiedService.createClassified({
+        ...formData,
+        price: parseFloat(formData.price),
+        location: user.location,
+      });
 
-    onClose();
+      if (onClassifiedCreated) {
+        onClassifiedCreated();
+      } else {
+        onClose();
+      }
+    } catch (error) {
+      console.error('Erreur création annonce:', error);
+      alert('Erreur lors de la création de l\'annonce');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleImageAdd = () => {
-    const url = prompt('URL de l\'image :');
-    if (url) {
+  const handleImageUpload = async (e) => {
+    const files = Array.from(e.target.files);
+
+    if (files.length === 0) return;
+
+    try {
+      setUploading(true);
+      const urls = await uploadService.uploadImages(files);
       setFormData({
         ...formData,
-        images: [...formData.images, url],
+        images: [...formData.images, ...urls],
       });
+    } catch (error) {
+      console.error('Erreur upload images:', error);
+      alert('Erreur lors de l\'upload des images');
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -133,20 +154,27 @@ const CreateClassified = ({ onClose }) => {
             </div>
           )}
 
-          <button
-            type="button"
-            className="btn-secondary"
-            onClick={handleImageAdd}
-          >
-            📷 Ajouter une image
-          </button>
+          <div className="form-group">
+            <label htmlFor="classified-images-upload" className="btn-secondary" style={{ cursor: 'pointer' }}>
+              {uploading ? '📤 Upload...' : '📷 Ajouter des images'}
+            </label>
+            <input
+              id="classified-images-upload"
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleImageUpload}
+              disabled={uploading}
+              style={{ display: 'none' }}
+            />
+          </div>
 
           <div className="modal-footer">
-            <button type="button" className="btn-secondary" onClick={onClose}>
+            <button type="button" className="btn-secondary" onClick={onClose} disabled={loading || uploading}>
               Annuler
             </button>
-            <button type="submit" className="btn-primary">
-              Publier l'annonce
+            <button type="submit" className="btn-primary" disabled={loading || uploading}>
+              {loading ? 'Publication...' : "Publier l'annonce"}
             </button>
           </div>
         </form>

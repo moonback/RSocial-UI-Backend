@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useApp } from '../../contexts/AppContext';
+import classifiedService from '../../services/classifiedService';
 import { formatRelativeTime } from '../../utils/dateUtils';
 import { calculateDistance, formatDistance } from '../../utils/geolocation';
 import './Classifieds.css';
 
-const ClassifiedCard = ({ classified }) => {
+const ClassifiedCard = ({ classified, onClassifiedUpdated }) => {
   const { user } = useAuth();
-  const { deleteClassified, sendMessage } = useApp();
+  const { sendMessage } = useApp();
+  const [loading, setLoading] = useState(false);
 
   const distance = calculateDistance(
     user.location.lat,
@@ -16,16 +18,19 @@ const ClassifiedCard = ({ classified }) => {
     classified.location.lng
   );
 
-  const isMyClassified = classified.userId === user.id;
+  const isMyClassified = classified.user_id === user.id || classified.userId === user.id;
 
   const handleContact = () => {
-    const message = prompt(`Envoyer un message à ${classified.userName} :`);
+    const userName = classified.user?.name || classified.userName;
+    const userId = classified.user_id || classified.userId;
+    
+    const message = prompt(`Envoyer un message à ${userName} :`);
     if (message) {
       sendMessage({
         senderId: user.id,
         senderName: user.name,
-        receiverId: classified.userId,
-        receiverName: classified.userName,
+        receiverId: userId,
+        receiverName: userName,
         content: message,
         relatedType: 'classified',
         relatedId: classified.id,
@@ -34,9 +39,23 @@ const ClassifiedCard = ({ classified }) => {
     }
   };
 
-  const handleDelete = () => {
-    if (window.confirm('Êtes-vous sûr de vouloir supprimer cette annonce ?')) {
-      deleteClassified(classified.id);
+  const handleDelete = async () => {
+    if (!window.confirm('Êtes-vous sûr de vouloir supprimer cette annonce ?')) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await classifiedService.deleteClassified(classified.id);
+      
+      if (onClassifiedUpdated) {
+        onClassifiedUpdated();
+      }
+    } catch (error) {
+      console.error('Erreur suppression annonce:', error);
+      alert('Erreur lors de la suppression');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -93,18 +112,22 @@ const ClassifiedCard = ({ classified }) => {
           </div>
           <div className="meta-item">
             <span className="meta-icon">⏰</span>
-            <span>{formatRelativeTime(classified.createdAt)}</span>
+            <span>{formatRelativeTime(classified.created_at || classified.createdAt)}</span>
           </div>
         </div>
 
         <div className="classified-seller">
-          <img src={classified.userAvatar} alt={classified.userName} className="seller-avatar" />
-          <span className="seller-name">{classified.userName}</span>
+          <img 
+            src={classified.user?.avatar || classified.userAvatar || `https://ui-avatars.com/api/?name=${classified.user?.name || classified.userName}&background=random`} 
+            alt={classified.user?.name || classified.userName} 
+            className="seller-avatar" 
+          />
+          <span className="seller-name">{classified.user?.name || classified.userName}</span>
         </div>
 
         {isMyClassified ? (
-          <button className="classified-action-btn btn-delete" onClick={handleDelete}>
-            🗑️ Supprimer
+          <button className="classified-action-btn btn-delete" onClick={handleDelete} disabled={loading}>
+            {loading ? '⏳' : '🗑️ Supprimer'}
           </button>
         ) : (
           <button className="classified-action-btn btn-primary" onClick={handleContact}>

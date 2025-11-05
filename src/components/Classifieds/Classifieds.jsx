@@ -1,29 +1,50 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useApp } from '../../contexts/AppContext';
-import { filterByDistance } from '../../utils/geolocation';
+import classifiedService from '../../services/classifiedService';
 import ClassifiedCard from './ClassifiedCard';
 import CreateClassified from './CreateClassified';
 import './Classifieds.css';
 
 const Classifieds = () => {
   const { user } = useAuth();
-  const { classifieds } = useApp();
+  const [classifieds, setClassifieds] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showCreateClassified, setShowCreateClassified] = useState(false);
   const [filter, setFilter] = useState('all');
 
-  const filteredClassifieds = useMemo(() => {
-    let filtered = filterByDistance(classifieds, user.location, user.radius);
+  // Charger les annonces depuis l'API
+  useEffect(() => {
+    loadClassifieds();
+  }, [user.location, user.radius, filter]);
 
-    if (filter !== 'all') {
-      filtered = filtered.filter(classified => classified.category === filter);
+  const loadClassifieds = async () => {
+    try {
+      setLoading(true);
+      const fetchedClassifieds = await classifiedService.getClassifieds(
+        user.location.lat,
+        user.location.lng,
+        user.radius,
+        filter
+      );
+      setClassifieds(fetchedClassifieds);
+    } catch (error) {
+      console.error('Erreur chargement annonces:', error);
+    } finally {
+      setLoading(false);
     }
+  };
 
+  const handleClassifiedCreated = () => {
+    loadClassifieds();
+    setShowCreateClassified(false);
+  };
+
+  const filteredClassifieds = useMemo(() => {
     // Trier par date (plus récent en premier)
-    return filtered.sort((a, b) => 
-      new Date(b.createdAt) - new Date(a.createdAt)
+    return classifieds.sort((a, b) => 
+      new Date(b.created_at) - new Date(a.created_at)
     );
-  }, [classifieds, user.location, user.radius, filter]);
+  }, [classifieds]);
 
   const categories = [
     { value: 'all', label: 'Toutes', icon: '📋' },
@@ -60,7 +81,12 @@ const Classifieds = () => {
       </div>
 
       <div className="classifieds-grid">
-        {filteredClassifieds.length === 0 ? (
+        {loading ? (
+          <div className="loading-container">
+            <div className="spinner"></div>
+            <p className="loading-text">Chargement des annonces...</p>
+          </div>
+        ) : filteredClassifieds.length === 0 ? (
           <div className="empty-state">
             <div className="empty-state-icon">🏷️</div>
             <h3>Aucune annonce trouvée</h3>
@@ -68,13 +94,13 @@ const Classifieds = () => {
           </div>
         ) : (
           filteredClassifieds.map(classified => (
-            <ClassifiedCard key={classified.id} classified={classified} />
+            <ClassifiedCard key={classified.id} classified={classified} onClassifiedUpdated={loadClassifieds} />
           ))
         )}
       </div>
 
       {showCreateClassified && (
-        <CreateClassified onClose={() => setShowCreateClassified(false)} />
+        <CreateClassified onClose={() => setShowCreateClassified(false)} onClassifiedCreated={handleClassifiedCreated} />
       )}
     </div>
   );
