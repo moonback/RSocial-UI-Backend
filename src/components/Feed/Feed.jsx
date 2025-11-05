@@ -130,26 +130,29 @@ const Feed = () => {
   return (
     <div className="feed-container">
       <div className="feed-header">
-        <h2>Fil d'actualités local</h2>
-        <p>
-          {filteredPosts.length > 0 ? (
-            <>
-              {filteredPosts.length} {filteredPosts.length === 1 ? 'publication' : 'publications'} 
-              {customRadius !== user.radius && ` dans un rayon de ${customRadius} km`}
-              {customRadius === user.radius && ` dans un rayon de ${user.radius} km`}
-            </>
-          ) : (
-            `Aucune publication dans un rayon de ${customRadius} km`
-          )}
-        </p>
+        <div className="feed-header-content">
+          <div className="feed-header-text">
+            <h2>Fil d'actualités local</h2>
+            <p>
+              {filteredPosts.length > 0 ? (
+                <>
+                  {filteredPosts.length} {filteredPosts.length === 1 ? 'publication' : 'publications'} 
+                  {customRadius !== user.radius && ` dans un rayon de ${customRadius} km`}
+                  {customRadius === user.radius && ` dans un rayon de ${user.radius} km`}
+                </>
+              ) : (
+                `Aucune publication dans un rayon de ${customRadius} km`
+              )}
+            </p>
+          </div>
+          <button 
+            className="create-post-button"
+            onClick={() => setShowCreatePost(true)}
+          >
+            ✏️ Créer une publication
+          </button>
+        </div>
       </div>
-
-      <button 
-        className="create-post-button"
-        onClick={() => setShowCreatePost(true)}
-      >
-        ✏️ Créer une publication
-      </button>
 
       <div className="feed-filters-container">
         <div className="feed-filters">

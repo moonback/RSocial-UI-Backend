@@ -5,7 +5,20 @@
 }
 
 .feed-header {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
+}
+
+.feed-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.feed-header-text {
+  flex: 1;
+  min-width: 200px;
 }
 
 .feed-header h2 {
@@ -22,17 +35,23 @@
 }
 
 .create-post-button {
-  width: 100%;
-  padding: 12px;
+  padding: 10px 18px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
   border-radius: 10px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  margin-bottom: 16px;
-  transition: transform 0.2s;
+  white-space: nowrap;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+  align-self: flex-start;
+}
+
+.create-post-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
 }
 
 .create-post-button:hover {
