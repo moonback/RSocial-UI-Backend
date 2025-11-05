@@ -60,12 +60,12 @@
   --glass-shadow-md: 0 8px 32px rgba(139, 92, 246, 0.15);
   --glass-shadow-lg: 0 16px 48px rgba(139, 92, 246, 0.2);
 
-  /* Spacing */
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 32px;
+  /* Spacing - Compact */
+  --spacing-xs: 3px;
+  --spacing-sm: 6px;
+  --spacing-md: 12px;
+  --spacing-lg: 18px;
+  --spacing-xl: 24px;
 
   /* Border Radius */
   --radius-sm: 8px;
@@ -97,10 +97,20 @@ body {
   background: var(--bg-gradient);
   background-attachment: fixed;
   color: var(--text-primary);
-  line-height: 1.6;
+  font-size: 14px;
+  line-height: 1.5;
   min-height: 100vh;
   position: relative;
 }
+
+/* Typography - Compact */
+h1 { font-size: 24px; font-weight: 700; line-height: 1.3; }
+h2 { font-size: 20px; font-weight: 700; line-height: 1.3; }
+h3 { font-size: 18px; font-weight: 600; line-height: 1.4; }
+h4 { font-size: 16px; font-weight: 600; line-height: 1.4; }
+h5 { font-size: 14px; font-weight: 600; line-height: 1.4; }
+h6 { font-size: 13px; font-weight: 600; line-height: 1.4; }
+p { font-size: 14px; line-height: 1.5; }
 
 body::before {
   content: '';
@@ -134,9 +144,9 @@ code {
 
 .main-content {
   flex: 1;
-  margin-top: 64px;
-  margin-left: 260px;
-  padding: var(--spacing-lg);
+  margin-top: 56px;
+  margin-left: 240px;
+  padding: var(--spacing-md);
   transition: margin-left var(--transition-slow);
   animation: fadeIn 0.4s ease-out;
 }

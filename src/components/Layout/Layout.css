@@ -4,7 +4,7 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 64px;
+  height: 56px;
   background: var(--glass-bg-primary);
   backdrop-filter: var(--glass-backdrop);
   -webkit-backdrop-filter: var(--glass-backdrop);
@@ -18,7 +18,7 @@
   height: 100%;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -40,7 +40,7 @@
 }
 
 .header-title {
-  font-size: 24px;
+  font-size: 16px;
   margin: 0;
   color: var(--text-primary);
   font-weight: 700;
@@ -69,13 +69,14 @@
 }
 
 .user-avatar-small {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   object-fit: cover;
 }
 
 .user-name {
+  font-size: 13px;
   font-weight: 500;
   color: #374151;
 }
@@ -95,12 +96,12 @@
 }
 
 .logout-button {
-  padding: 8px 16px;
+  padding: 6px 12px;
   background-color: #f3f4f6;
   color: #374151;
   border: none;
-  border-radius: 8px;
-  font-size: 14px;
+  border-radius: 6px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.2s;
@@ -113,10 +114,10 @@
 /* Glass Sidebar */
 .sidebar {
   position: fixed;
-  top: 64px;
+  top: 56px;
   left: 0;
   bottom: 0;
-  width: 260px;
+  width: 240px;
   background: var(--glass-bg-secondary);
   backdrop-filter: var(--glass-backdrop);
   -webkit-backdrop-filter: var(--glass-backdrop);
@@ -129,7 +130,7 @@
 }
 
 .sidebar-nav {
-  padding: 20px 0;
+  padding: 12px 0;
   display: flex;
   flex-direction: column;
 }
@@ -137,8 +138,8 @@
 .sidebar-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 14px 20px;
+  gap: 10px;
+  padding: 10px 16px;
   background: var(--glass-bg-primary);
   backdrop-filter: var(--glass-backdrop);
   -webkit-backdrop-filter: var(--glass-backdrop);
@@ -149,9 +150,10 @@
   transition: all var(--transition-base);
   position: relative;
   margin: 0 var(--spacing-sm);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   box-shadow: var(--glass-shadow-sm);
   overflow: hidden;
+  font-size: 13px;
 }
 
 .sidebar-item::before {
@@ -208,14 +210,14 @@
 }
 
 .sidebar-icon {
-  font-size: 20px;
-  width: 24px;
+  font-size: 18px;
+  width: 20px;
   text-align: center;
 }
 
 .sidebar-label {
   flex: 1;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 500;
   color: #374151;
 }
@@ -312,7 +314,7 @@
 
 .loading-text {
   color: #6b7280;
-  font-size: 16px;
+  font-size: 13px;
 }
 
 /* Empty State */
@@ -321,23 +323,25 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 60px 20px;
+  padding: 40px 16px;
   text-align: center;
 }
 
 .empty-state-icon {
-  font-size: 64px;
-  margin-bottom: 16px;
+  font-size: 40px;
+  margin-bottom: 12px;
 }
 
 .empty-state h3 {
-  font-size: 20px;
+  font-size: 16px;
   color: #1f2937;
-  margin: 0 0 8px 0;
+  margin: 0 0 6px 0;
+  font-weight: 600;
 }
 
 .empty-state p {
   color: #6b7280;
   margin: 0;
+  font-size: 13px;
 }
 

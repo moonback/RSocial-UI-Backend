@@ -5,6 +5,7 @@ import './Auth.css';
 
 const Login = ({ onToggleMode }) => {
   const { login } = useAuth();
+  const [loginMethod, setLoginMethod] = useState('email'); // 'email' ou 'phone'
   const [formData, setFormData] = useState({
     email: '',
     phone: '',
@@ -25,16 +26,18 @@ const Login = ({ onToggleMode }) => {
   const validate = () => {
     const newErrors = {};
     
-    if (!formData.email && !formData.phone) {
-      newErrors.general = 'Veuillez fournir un email ou un téléphone';
-    }
-    
-    if (formData.email && !validateEmail(formData.email)) {
-      newErrors.email = 'Email invalide';
-    }
-    
-    if (formData.phone && !validatePhone(formData.phone)) {
-      newErrors.phone = 'Numéro de téléphone invalide';
+    if (loginMethod === 'email') {
+      if (!formData.email) {
+        newErrors.email = 'Email requis';
+      } else if (!validateEmail(formData.email)) {
+        newErrors.email = 'Email invalide';
+      }
+    } else {
+      if (!formData.phone) {
+        newErrors.phone = 'Téléphone requis';
+      } else if (!validatePhone(formData.phone)) {
+        newErrors.phone = 'Numéro de téléphone invalide';
+      }
     }
 
     if (!formData.password) {
@@ -65,7 +68,9 @@ const Login = ({ onToggleMode }) => {
     setLoading(true);
     
     try {
-      const result = await login(formData.email, formData.phone, formData.password);
+      const email = loginMethod === 'email' ? formData.email : '';
+      const phone = loginMethod === 'phone' ? formData.phone : '';
+      const result = await login(email, phone, formData.password);
       console.log('[Login] Résultat de la connexion:', result);
       
       if (!result.success) {
@@ -140,39 +145,66 @@ const Login = ({ onToggleMode }) => {
             </div>
           )}
 
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="votre@email.com"
-              autoComplete="email"
+          <div className="login-method-toggle">
+            <button
+              type="button"
+              className={`toggle-button ${loginMethod === 'email' ? 'active' : ''}`}
+              onClick={() => {
+                setLoginMethod('email');
+                setErrors({});
+                setFormData({ ...formData, phone: '' });
+              }}
               disabled={loading}
-            />
-            {errors.email && <span className="error-text">{errors.email}</span>}
+            >
+              📧 Email
+            </button>
+            <button
+              type="button"
+              className={`toggle-button ${loginMethod === 'phone' ? 'active' : ''}`}
+              onClick={() => {
+                setLoginMethod('phone');
+                setErrors({});
+                setFormData({ ...formData, email: '' });
+              }}
+              disabled={loading}
+            >
+              📱 Téléphone
+            </button>
           </div>
 
-          <div className="form-divider">
-            <span>OU</span>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="phone">Téléphone</label>
-            <input
-              type="tel"
-              id="phone"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              placeholder="+33 6 12 34 56 78"
-              autoComplete="tel"
-              disabled={loading}
-            />
-            {errors.phone && <span className="error-text">{errors.phone}</span>}
-          </div>
+          {loginMethod === 'email' ? (
+            <div className="form-group">
+              <label htmlFor="email">Email *</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="votre@email.com"
+                autoComplete="email"
+                disabled={loading}
+                className={errors.email ? 'error' : ''}
+              />
+              {errors.email && <span className="error-text">{errors.email}</span>}
+            </div>
+          ) : (
+            <div className="form-group">
+              <label htmlFor="phone">Téléphone *</label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="+33 6 12 34 56 78"
+                autoComplete="tel"
+                disabled={loading}
+                className={errors.phone ? 'error' : ''}
+              />
+              {errors.phone && <span className="error-text">{errors.phone}</span>}
+            </div>
+          )}
 
           <div className="form-group">
             <label htmlFor="password">Mot de passe</label>

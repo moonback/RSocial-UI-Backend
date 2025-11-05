@@ -1,6 +1,7 @@
 .feed-container {
-  max-width: 800px;
+  /* max-width: 800px; */
   margin: 0 auto;
+  padding: 0 16px;
 }
 
 .feed-header {
@@ -8,27 +9,29 @@
 }
 
 .feed-header h2 {
-  font-size: 28px;
-  margin: 0 0 8px 0;
+  font-size: 22px;
+  margin: 0 0 6px 0;
   color: #1f2937;
+  font-weight: 700;
 }
 
 .feed-header p {
   color: #6b7280;
   margin: 0;
+  font-size: 13px;
 }
 
 .create-post-button {
   width: 100%;
-  padding: 16px;
+  padding: 12px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  border-radius: 12px;
-  font-size: 16px;
+  border-radius: 10px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   transition: transform 0.2s;
 }
 
@@ -49,11 +52,11 @@
 }
 
 .filter-chip {
-  padding: 8px 16px;
+  padding: 6px 12px;
   background-color: white;
   border: 2px solid #e5e7eb;
-  border-radius: 20px;
-  font-size: 14px;
+  border-radius: 16px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
@@ -79,8 +82,8 @@
 /* Post Card */
 .post-card {
   background: var(--bg-primary);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
   box-shadow: var(--shadow-md);
   transition: all var(--transition-base);
   border: 1px solid var(--border-color);
@@ -115,20 +118,20 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .post-user-info {
   display: flex;
-  gap: 12px;
+  gap: 10px;
 }
 
 .post-avatar {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid var(--primary-light);
+  border: 2px solid var(--primary-light);
   transition: all var(--transition-base);
   box-shadow: var(--shadow-sm);
 }
@@ -140,9 +143,10 @@
 }
 
 .post-user-name {
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   transition: color var(--transition-base);
 }
 
