@@ -84,12 +84,53 @@ const Login = ({ onToggleMode }) => {
 
   return (
     <div className="auth-container">
-      <div className="auth-card">
-        <div className="auth-header">
+      <div className="auth-image-section">
+        <div className="auth-image-content">
           <h1>🏘️ RSocial</h1>
-          <h2>Connexion</h2>
-          <p>Connectez-vous pour rejoindre votre communauté locale</p>
+          <h2>Bienvenue !</h2>
+          <p>Rejoignez votre communauté locale et connectez-vous avec vos voisins</p>
+          <div className="auth-image-visual">
+            <svg viewBox="0 0 500 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+              {/* Maison principale */}
+              <rect x="150" y="200" width="200" height="150" rx="10" fill="rgba(255,255,255,0.25)" stroke="rgba(255,255,255,0.5)" strokeWidth="2"/>
+              <path d="M150 200 L250 120 L350 200 Z" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" strokeWidth="2"/>
+              <rect x="200" y="250" width="100" height="100" rx="5" fill="rgba(255,255,255,0.2)"/>
+              <circle cx="220" cy="290" r="8" fill="rgba(255,255,255,0.6)"/>
+              <circle cx="280" cy="290" r="8" fill="rgba(255,255,255,0.6)"/>
+              
+              {/* Maisons secondaires */}
+              <rect x="80" y="240" width="60" height="80" rx="5" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5"/>
+              <path d="M80 240 L110 200 L140 240 Z" fill="rgba(255,255,255,0.25)"/>
+              
+              <rect x="360" y="240" width="60" height="80" rx="5" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5"/>
+              <path d="M360 240 L390 200 L420 240 Z" fill="rgba(255,255,255,0.25)"/>
+              
+              {/* Personnes connectées */}
+              <circle cx="120" cy="150" r="20" fill="rgba(255,255,255,0.4)"/>
+              <path d="M120 170 L120 200 L110 210 L130 210 L120 200 Z" fill="rgba(255,255,255,0.3)"/>
+              
+              <circle cx="380" cy="150" r="20" fill="rgba(255,255,255,0.4)"/>
+              <path d="M380 170 L380 200 L370 210 L390 210 L380 200 Z" fill="rgba(255,255,255,0.3)"/>
+              
+              {/* Lignes de connexion */}
+              <path d="M140 160 Q250 140 360 160" stroke="rgba(255,255,255,0.3)" strokeWidth="2" fill="none" strokeDasharray="5,5"/>
+              
+              {/* Étoiles */}
+              <circle cx="100" cy="100" r="3" fill="rgba(255,255,255,0.6)"/>
+              <circle cx="400" cy="90" r="2.5" fill="rgba(255,255,255,0.5)"/>
+              <circle cx="450" cy="130" r="2" fill="rgba(255,255,255,0.4)"/>
+            </svg>
+          </div>
         </div>
+      </div>
+      
+      <div className="auth-form-section">
+        <div className="auth-card">
+          <div className="auth-header">
+            <h1>🏘️ RSocial</h1>
+            <h2>Connexion</h2>
+            <p>Connectez-vous pour rejoindre votre communauté locale</p>
+          </div>
 
         <form onSubmit={handleSubmit} className="auth-form">
           {errors.general && (
@@ -160,6 +201,7 @@ const Login = ({ onToggleMode }) => {
               S'inscrire
             </button>
           </p>
+        </div>
         </div>
       </div>
     </div>

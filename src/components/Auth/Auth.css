@@ -1,15 +1,41 @@
 .auth-container {
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   position: relative;
   overflow: hidden;
 }
 
+@media (max-width: 1024px) {
+  .auth-container {
+    grid-template-columns: 1fr;
+  }
+}
+
 .auth-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  z-index: 0;
+}
+
+/* Section image à gauche */
+.auth-image-section {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  overflow: hidden;
+  z-index: 1;
+}
+
+.auth-image-section::before {
   content: '';
   position: absolute;
   top: -50%;
@@ -24,22 +50,92 @@
   z-index: 0;
 }
 
-.auth-container::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.02) 0%, transparent 100%);
-  z-index: 0;
-  pointer-events: none;
+.auth-image-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: white;
+  max-width: 500px;
+}
+
+.auth-image-content h1 {
+  font-size: 56px;
+  font-weight: 700;
+  margin: 0 0 24px 0;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.auth-image-content h2 {
+  font-size: 32px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  opacity: 0.95;
+}
+
+.auth-image-content p {
+  font-size: 18px;
+  line-height: 1.6;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.auth-image-visual {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  margin: 32px auto 0;
+  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3));
+  animation: floatImage 6s ease-in-out infinite;
+}
+
+@keyframes floatImage {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+/* Section formulaire à droite */
+.auth-form-section {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  background: #ffffff;
+  z-index: 1;
+}
+
+@media (max-width: 1024px) {
+  .auth-image-section {
+    display: none;
+  }
+  
+  .auth-form-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+  }
+  
+  .auth-form-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background:
+      radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.4) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(167, 139, 250, 0.3) 0%, transparent 50%),
+      radial-gradient(circle at 50% 20%, rgba(196, 181, 253, 0.3) 0%, transparent 50%);
+    animation: float 15s ease-in-out infinite;
+    z-index: 0;
+  }
 }
 
 .auth-card {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(40px) saturate(180%);
   -webkit-backdrop-filter: blur(40px) saturate(180%);
   border-radius: 24px;
@@ -47,14 +143,27 @@
   max-width: 480px;
   width: 100%;
   box-shadow: 
-    0 20px 60px rgba(0, 0, 0, 0.15),
-    0 8px 24px rgba(0, 0, 0, 0.1),
+    0 20px 60px rgba(0, 0, 0, 0.08),
+    0 8px 24px rgba(0, 0, 0, 0.05),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(148, 163, 184, 0.1);
   animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   overflow: hidden;
-  z-index: 1;
+  z-index: 2;
+}
+
+@media (max-width: 1024px) {
+  .auth-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    box-shadow: 
+      0 20px 60px rgba(0, 0, 0, 0.15),
+      0 8px 24px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+  }
 }
 
 .auth-card::before {
@@ -495,8 +604,14 @@
   text-decoration: none;
 }
 
+@media (max-width: 1024px) {
+  .auth-form-section {
+    padding: 24px;
+  }
+}
+
 @media (max-width: 640px) {
-  .auth-container {
+  .auth-form-section {
     padding: 16px;
   }
 

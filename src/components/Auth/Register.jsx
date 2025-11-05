@@ -195,12 +195,65 @@ const Register = ({ onToggleMode }) => {
 
   return (
     <div className="auth-container">
-      <div className="auth-card">
-        <div className="auth-header">
+      <div className="auth-image-section">
+        <div className="auth-image-content">
           <h1>🏘️ RSocial</h1>
-          <h2>Inscription</h2>
-          <p>Rejoignez votre communauté locale</p>
+          <h2>Commencez votre aventure</h2>
+          <p>Créez votre compte et découvrez votre quartier sous un nouvel angle</p>
+          <div className="auth-image-visual">
+            <svg viewBox="0 0 500 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+              {/* Carte du quartier */}
+              <rect x="100" y="150" width="300" height="200" rx="15" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.4)" strokeWidth="2"/>
+              
+              {/* Rues */}
+              <line x1="250" y1="150" x2="250" y2="350" stroke="rgba(255,255,255,0.3)" strokeWidth="2"/>
+              <line x1="100" y1="250" x2="400" y2="250" stroke="rgba(255,255,255,0.3)" strokeWidth="2"/>
+              
+              {/* Points d'intérêt */}
+              <circle cx="175" cy="200" r="12" fill="rgba(255,255,255,0.5)"/>
+              <circle cx="325" cy="200" r="12" fill="rgba(255,255,255,0.5)"/>
+              <circle cx="175" cy="300" r="12" fill="rgba(255,255,255,0.5)"/>
+              <circle cx="325" cy="300" r="12" fill="rgba(255,255,255,0.5)"/>
+              
+              {/* Point central (vous) */}
+              <circle cx="250" cy="250" r="18" fill="rgba(255,255,255,0.6)"/>
+              <circle cx="250" cy="250" r="25" fill="rgba(255,255,255,0.2)"/>
+              <circle cx="250" cy="250" r="35" fill="rgba(255,255,255,0.1)"/>
+              
+              {/* Icônes de maisons */}
+              <rect x="160" y="185" width="30" height="30" rx="3" fill="rgba(255,255,255,0.3)"/>
+              <path d="M160 185 L175 170 L190 185 Z" fill="rgba(255,255,255,0.4)"/>
+              
+              <rect x="310" y="185" width="30" height="30" rx="3" fill="rgba(255,255,255,0.3)"/>
+              <path d="M310 185 L325 170 L340 185 Z" fill="rgba(255,255,255,0.4)"/>
+              
+              <rect x="160" y="285" width="30" height="30" rx="3" fill="rgba(255,255,255,0.3)"/>
+              <path d="M160 285 L175 270 L190 285 Z" fill="rgba(255,255,255,0.4)"/>
+              
+              <rect x="310" y="285" width="30" height="30" rx="3" fill="rgba(255,255,255,0.3)"/>
+              <path d="M310 285 L325 270 L340 285 Z" fill="rgba(255,255,255,0.4)"/>
+              
+              {/* Lignes de connexion */}
+              <path d="M187 203 Q250 220 313 203" stroke="rgba(255,255,255,0.25)" strokeWidth="2" fill="none" strokeDasharray="4,4"/>
+              <path d="M187 303 Q250 280 313 303" stroke="rgba(255,255,255,0.25)" strokeWidth="2" fill="none" strokeDasharray="4,4"/>
+              <path d="M175 250 Q250 240 325 250" stroke="rgba(255,255,255,0.25)" strokeWidth="2" fill="none" strokeDasharray="4,4"/>
+              
+              {/* Éléments décoratifs */}
+              <circle cx="80" cy="100" r="4" fill="rgba(255,255,255,0.5)"/>
+              <circle cx="420" cy="120" r="3" fill="rgba(255,255,255,0.4)"/>
+              <circle cx="450" cy="180" r="3.5" fill="rgba(255,255,255,0.45)"/>
+            </svg>
+          </div>
         </div>
+      </div>
+      
+      <div className="auth-form-section">
+        <div className="auth-card">
+          <div className="auth-header">
+            <h1>🏘️ RSocial</h1>
+            <h2>Inscription</h2>
+            <p>Rejoignez votre communauté locale</p>
+          </div>
 
         <form onSubmit={handleSubmit} className="auth-form">
           {errors.general && (
@@ -339,6 +392,7 @@ const Register = ({ onToggleMode }) => {
               Se connecter
             </button>
           </p>
+        </div>
         </div>
       </div>
     </div>
