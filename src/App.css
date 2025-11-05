@@ -655,4 +655,3 @@ code {
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(to bottom, var(--primary-dark), var(--primary-color));
 }
-
