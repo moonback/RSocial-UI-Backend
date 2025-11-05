@@ -1,0 +1,364 @@
+# 🎯 Règles Cursor - RSocial
+
+Ce fichier contient les règles et conventions pour l'assistant IA Cursor lors du développement sur RSocial.
+
+## 📋 Contexte du Projet
+
+**RSocial** est un réseau social hyper-local qui connecte les communautés de quartier. L'application permet aux résidents de découvrir les événements, services et actualités dans leur zone géographique.
+
+**Stack Technique** :
+- Frontend : React 19, Vite, React Router DOM, Context API
+- Backend : Node.js, Express, Supabase (PostgreSQL + PostGIS)
+- Communication : REST API + WebSocket (Socket.io)
+- Cartes : React Leaflet (OpenStreetMap)
+- Storage : Supabase Storage
+
+**Architecture** :
+- Client-serveur avec séparation frontend/backend
+- API REST pour les opérations CRUD
+- WebSocket pour la messagerie en temps réel
+- Base de données PostgreSQL avec PostGIS pour les données géographiques
+
+## 🎨 Standards de Code
+
+### Naming Conventions
+
+- **Variables et fonctions** : `camelCase`
+  ```javascript
+  const userName = "John";
+  const calculateDistance = () => { };
+  ```
+
+- **Composants React** : `PascalCase`
+  ```javascript
+  function UserProfile() { }
+  const PostCard = () => { };
+  ```
+
+- **Constantes** : `UPPER_SNAKE_CASE`
+  ```javascript
+  const API_URL = "https://api.example.com";
+  const MAX_RADIUS = 5;
+  ```
+
+- **Fichiers** :
+  - Composants : `PascalCase.jsx` (ex: `UserProfile.jsx`)
+  - Services/Utils : `camelCase.js` (ex: `postService.js`)
+  - Styles : `PascalCase.css` (ex: `UserProfile.css`)
+
+### Structure des Composants React
+
+```javascript
+// 1. Imports (React, hooks, contextes, services, styles)
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { getPosts } from '../services/postService';
+import './Component.css';
+
+// 2. Composant fonctionnel
+const Component = ({ prop1, prop2 }) => {
+  // 3. Hooks (useState, useEffect, useContext, etc.)
+  const { user } = useAuth();
+  const [state, setState] = useState(null);
+
+  // 4. Effects
+  useEffect(() => {
+    // Logique
+  }, []);
+
+  // 5. Handlers
+  const handleClick = () => {
+    // Logique
+  };
+
+  // 6. Render
+  return (
+    <div className="component">
+      {/* JSX */}
+    </div>
+  );
+};
+
+// 7. Export
+export default Component;
+```
+
+### Structure des Services (API)
+
+```javascript
+// services/postService.js
+import api from '../config/api';
+
+// Fonctions exportées
+export const getPosts = async (params) => {
+  const response = await api.get('/posts', { params });
+  return response.data;
+};
+
+export const createPost = async (postData) => {
+  const response = await api.post('/posts', postData);
+  return response.data;
+};
+```
+
+### Structure des Contrôleurs (Backend)
+
+```javascript
+// controllers/postController.js
+import { supabaseAdmin } from '../config/supabase.js';
+
+export const getPosts = async (req, res) => {
+  try {
+    // Logique métier
+    const { data, error } = await supabaseAdmin
+      .from('posts')
+      .select('*');
+
+    if (error) throw error;
+
+    res.json({ posts: data });
+  } catch (error) {
+    console.error('Erreur getPosts:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+};
+```
+
+## 📁 Organisation des Fichiers
+
+### Frontend (`src/`)
+
+- `components/` : Composants React organisés par fonctionnalité
+  - `Auth/` : Login, Register
+  - `Feed/` : Fil d'actualités
+  - `Map/` : Carte interactive
+  - `Groups/` : Groupes
+  - `Events/` : Événements
+  - `Classifieds/` : Petites annonces
+  - `Messages/` : Messagerie
+  - `Notifications/` : Notifications
+  - `Profile/` : Profil utilisateur
+  - `Moderation/` : Modération
+  - `Stories/` : Stories 24h
+  - `Neighbors/` : Voisins
+  - `Layout/` : Header, Sidebar
+
+- `contexts/` : Contextes React (AuthContext, AppContext)
+- `services/` : Services API (postService, messageService, etc.)
+- `config/` : Configuration (api.js)
+- `utils/` : Utilitaires (geolocation, dateUtils, validation)
+
+### Backend (`backend/src/`)
+
+- `routes/` : Définition des routes API
+- `controllers/` : Logique métier
+- `middleware/` : Middleware Express (auth, errorHandler, logger)
+- `services/` : Services backend (socket.js)
+- `config/` : Configuration (supabase.js)
+- `utils/` : Utilitaires
+- `scripts/` : Scripts utilitaires (initDatabase.js)
+
+## 🔧 Patterns Architecturaux
+
+### Gestion d'État
+
+- **État local** : `useState` pour les formulaires et états UI
+- **État global** : `Context API` (AuthContext, AppContext)
+- **Pas de Redux** : Le Context API suffit pour cette application
+
+### Appels API
+
+- **Services** : Utiliser les services dans `src/services/`
+- **Axios** : Utiliser le client Axios configuré dans `src/config/api.js`
+- **Gestion d'erreurs** : Try/catch avec messages d'erreur clairs
+
+### Géolocalisation
+
+- **Format** : `{ lat: number, lng: number, address: string }`
+- **Calcul de distance** : Utiliser `calculateDistance()` de `src/utils/geolocation.js`
+- **Filtrage** : Filtrer par distance dans les requêtes API
+
+### Dates
+
+- **Formatage** : Utiliser `date-fns` via `src/utils/dateUtils.js`
+- **Affichage** : Dates relatives ("il y a 2 heures") pour les posts récents
+- **Événements** : Dates complètes pour les événements
+
+## 🎯 Bonnes Pratiques
+
+### Code Quality
+
+- **Indentation** : 2 espaces (pas de tabs)
+- **Guillemets** : Simple quotes (`'`) pour JavaScript
+- **Point-virgule** : Oui (semicolons)
+- **Ligne max** : 100 caractères (souhaitable)
+
+### Commentaires
+
+- **Commenter le "pourquoi"**, pas le "quoi"
+- Utiliser des commentaires clairs et concis
+- Éviter les commentaires redondants
+
+```javascript
+// ❌ Mauvais
+const userName = "John"; // Définit le nom d'utilisateur
+
+// ✅ Bon
+// Calcul de la distance avec la formule de Haversine
+const distance = calculateDistance(lat1, lng1, lat2, lng2);
+```
+
+### Gestion d'Erreurs
+
+**Frontend** :
+```javascript
+try {
+  const data = await service.getData();
+} catch (error) {
+  console.error('Erreur:', error);
+  // Afficher un message à l'utilisateur
+  setError('Une erreur est survenue');
+}
+```
+
+**Backend** :
+```javascript
+try {
+  const { data, error } = await supabaseAdmin.from('table').select('*');
+  if (error) throw error;
+  res.json({ data });
+} catch (error) {
+  console.error('Erreur:', error);
+  res.status(500).json({ error: 'Erreur serveur' });
+}
+```
+
+### Validation
+
+- **Frontend** : Valider les formulaires avant envoi (utiliser `src/utils/validation.js`)
+- **Backend** : Valider avec `express-validator` dans les routes
+- **Sanitization** : Échapper le HTML côté client et serveur
+
+## 🚫 Choses à Éviter
+
+### Anti-patterns
+
+- ❌ **Classes React** : Utiliser uniquement des composants fonctionnels
+- ❌ **Redux** : Pas nécessaire, utiliser Context API
+- ❌ **Inline styles** : Utiliser les fichiers CSS/classes CSS
+- ❌ **Console.log en production** : Utiliser un logger approprié
+- ❌ **Hardcoded values** : Utiliser des constantes ou variables d'environnement
+- ❌ **Mutations directes** : Ne pas muter directement les objets/tableaux
+
+### Dépendances à Éviter
+
+- ❌ **JQuery** : Pas nécessaire avec React
+- ❌ **Lodash** : Utiliser les méthodes natives JavaScript quand possible
+- ❌ **Moment.js** : Utiliser `date-fns` (déjà inclus)
+
+## 📚 Dépendances à Favoriser
+
+### Déjà Incluses
+
+- **React 19** : Framework UI
+- **Vite** : Build tool
+- **React Router DOM** : Navigation
+- **Axios** : Client HTTP
+- **date-fns** : Manipulation des dates
+- **React Leaflet** : Cartes interactives
+- **Socket.io** : WebSocket
+- **Express** : Framework backend
+- **Supabase** : Base de données et storage
+
+### Pour Ajouter des Fonctionnalités
+
+- **Validation** : `express-validator` (déjà inclus)
+- **Testing** : `Jest`, `React Testing Library`, `Supertest`
+- **Animations** : `Framer Motion` (si nécessaire)
+- **Charts** : `Recharts` ou `Chart.js` (pour analytics)
+
+## 🔒 Sécurité
+
+### Authentification
+
+- **JWT** : Utiliser JWT pour l'authentification
+- **Tokens** : Stocker les tokens dans localStorage (à sécuriser en production)
+- **Middleware** : Utiliser `authenticate` middleware pour les routes protégées
+
+### Validation
+
+- **Côté client** : Valider les formulaires avant envoi
+- **Côté serveur** : Toujours valider avec `express-validator`
+- **Sanitization** : Échapper le HTML et prévenir les injections SQL
+
+### Variables d'Environnement
+
+- **Ne jamais commiter** les fichiers `.env` ou `.env.local`
+- **Utiliser** les fichiers `.env.example` comme référence
+- **Backend** : `SUPABASE_SERVICE_KEY` doit rester secret
+- **Frontend** : `VITE_API_URL` pour l'URL de l'API
+
+## 🧪 Tests (À Implémenter)
+
+- **Tests unitaires** : Tester les utilitaires et services
+- **Tests d'intégration** : Tester les endpoints API
+- **Tests E2E** : Tester les flux utilisateur complets
+- **Coverage** : Objectif de 80% de couverture
+
+## 📝 Documentation
+
+### Code Documentation
+
+- **JSDoc** : Pour les fonctions complexes
+- **README** : Pour chaque module important
+- **Commentaires** : Pour les algorithmes complexes
+
+### Documentation des Changements
+
+- **Changelog** : Documenter les changements dans `CHANGELOG.md` (si existant)
+- **API_DOCS.md** : Mettre à jour pour les changements d'API
+- **README.md** : Mettre à jour pour les nouvelles fonctionnalités
+
+## 🔄 Tâches Courantes
+
+### Ajouter une Nouvelle Fonctionnalité
+
+1. Créer le composant dans `src/components/`
+2. Créer le service dans `src/services/`
+3. Créer la route dans `backend/src/routes/`
+4. Créer le contrôleur dans `backend/src/controllers/`
+5. Mettre à jour la documentation
+
+### Créer un Nouvel Endpoint API
+
+1. Ajouter la route dans `backend/src/routes/`
+2. Créer le contrôleur dans `backend/src/controllers/`
+3. Ajouter la validation avec `express-validator`
+4. Utiliser `authenticate` middleware si nécessaire
+5. Mettre à jour `API_DOCS.md`
+
+### Ajouter une Table de Base de Données
+
+1. Créer la migration SQL dans `backend/src/scripts/initDatabase.js`
+2. Ajouter les index nécessaires
+3. Documenter dans `DB_SCHEMA.md`
+4. Mettre à jour les contrôleurs/routes si nécessaire
+
+## 🌍 Langue
+
+- **Code** : Anglais (noms de variables, fonctions, commentaires)
+- **UI** : Français (texte affiché à l'utilisateur)
+- **Documentation** : Français (README, API_DOCS, etc.)
+
+## 📞 Support
+
+Pour toute question ou clarification :
+- Consulter la documentation : `README.md`, `ARCHITECTURE.md`, `API_DOCS.md`
+- Vérifier les exemples existants dans le code
+- Ouvrir une issue sur GitHub si nécessaire
+
+---
+
+**Dernière mise à jour** : Janvier 2025  
+**Version** : 1.0.0
+
