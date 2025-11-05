@@ -247,7 +247,7 @@ export const getMe = async (req, res) => {
 // Mettre à jour le profil
 export const updateProfile = async (req, res) => {
   try {
-    const { name, bio, radius, location } = req.body;
+    const { name, bio, radius, location, avatar } = req.body;
     const userId = req.user.id;
 
     const updates = {};
@@ -255,6 +255,7 @@ export const updateProfile = async (req, res) => {
     if (bio !== undefined) updates.bio = bio;
     if (radius !== undefined) updates.radius = radius;
     if (location !== undefined) updates.location = location;
+    if (avatar !== undefined) updates.avatar = avatar;
 
     const { data, error } = await supabaseAdmin
       .from('users')

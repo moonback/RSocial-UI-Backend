@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useApp } from '../../contexts/AppContext';
 import { formatRelativeTime } from '../../utils/dateUtils';
 import { getUserLocation, geocodeAddress, reverseGeocode } from '../../utils/geolocation';
+import uploadService from '../../services/uploadService';
 import './Profile.css';
 
 const Profile = () => {
@@ -18,7 +19,10 @@ const Profile = () => {
   const [location, setLocation] = useState(user?.location || null);
   const [gettingLocation, setGettingLocation] = useState(false);
   const [geocodingAddress, setGeocodingAddress] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState(null);
   const [errors, setErrors] = useState({});
+  const avatarInputRef = useRef(null);
 
   // Mettre à jour les données quand l'utilisateur change
   useEffect(() => {
@@ -28,8 +32,10 @@ const Profile = () => {
         bio: user.bio || '',
         radius: user.radius,
         address: user.location?.address || '',
+        avatar: user.avatar,
       });
       setLocation(user.location || null);
+      setAvatarPreview(null);
     }
   }, [user]);
 
@@ -140,13 +146,85 @@ const Profile = () => {
     setErrors({});
   };
 
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Vérifier que c'est une image
+    if (!file.type.startsWith('image/')) {
+      alert('Veuillez sélectionner une image');
+      return;
+    }
+
+    // Vérifier la taille (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('L\'image est trop volumineuse. Taille maximale : 5MB');
+      return;
+    }
+
+    // Créer un aperçu
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setAvatarPreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+
+    // Upload l'image
+    try {
+      setUploadingAvatar(true);
+      const avatarUrl = await uploadService.uploadImage(file);
+      
+      // Mettre à jour l'avatar dans formData (sera sauvegardé lors du submit)
+      setFormData({
+        ...formData,
+        avatar: avatarUrl
+      });
+
+      // Mettre à jour immédiatement l'avatar de l'utilisateur
+      await updateUser({ avatar: avatarUrl });
+    } catch (error) {
+      console.error('Erreur upload avatar:', error);
+      alert('Erreur lors de l\'upload de la photo de profil');
+      setAvatarPreview(null);
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
   const radiusOptions = [1, 2, 3, 4, 5];
 
   return (
     <div className="profile-container">
       <div className="profile-card">
         <div className="profile-header">
-          <img src={user.avatar} alt={user.name} className="profile-avatar" />
+          <div className="profile-avatar-wrapper">
+            <img 
+              src={avatarPreview || user.avatar} 
+              alt={user.name} 
+              className="profile-avatar" 
+            />
+            {isEditing && (
+              <>
+                <input
+                  ref={avatarInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarChange}
+                  style={{ display: 'none' }}
+                  disabled={uploadingAvatar}
+                />
+                <button
+                  type="button"
+                  className="profile-avatar-edit-btn"
+                  onClick={() => avatarInputRef.current?.click()}
+                  disabled={uploadingAvatar}
+                  title="Changer la photo de profil"
+                >
+                  {uploadingAvatar ? '⏳' : '📷'}
+                </button>
+              </>
+            )}
+          </div>
           <div className="profile-info">
             {isEditing ? (
               <input
@@ -248,8 +326,10 @@ const Profile = () => {
                     bio: user.bio || '',
                     radius: user.radius,
                     address: user.location?.address || '',
+                    avatar: user.avatar,
                   });
                   setLocation(user.location);
+                  setAvatarPreview(null);
                   setErrors({});
                 }}
               >
