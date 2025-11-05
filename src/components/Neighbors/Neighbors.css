@@ -743,26 +743,77 @@
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+  .neighbors-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+}
+
 @media (max-width: 768px) {
   .neighbors-container {
     padding: 12px;
   }
 
+  .neighbors-header h1 {
+    font-size: 26px;
+  }
+  
+  .neighbors-header .subtitle {
+    font-size: 14px;
+  }
+
   .neighbors-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 
   .neighbors-tabs {
     gap: 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .neighbors-tabs::-webkit-scrollbar {
+    display: none;
   }
 
   .neighbor-tab {
     padding: 10px 12px;
     font-size: 12px;
+    flex-shrink: 0;
   }
 
   .tab-label {
     display: none;
+  }
+  
+  .tab-icon {
+    font-size: 16px;
+  }
+
+  .neighbors-controls {
+    padding: 16px;
+  }
+
+  .control-group {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .search-bar {
+    min-width: 100%;
+  }
+
+  .sort-options {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
   }
 
   .radius-control {
@@ -790,6 +841,128 @@
 
   .neighbors-map-wrapper .leaflet-container {
     height: 400px !important;
+  }
+  
+  .neighbor-card {
+    padding: 16px;
+  }
+  
+  .neighbor-avatar {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .neighbor-name {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .neighbors-container {
+    padding: 10px;
+  }
+  
+  .neighbors-header h1 {
+    font-size: 22px;
+  }
+  
+  .neighbors-header .subtitle {
+    font-size: 13px;
+  }
+  
+  .neighbors-controls {
+    padding: 12px;
+  }
+  
+  .neighbor-tab {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+  
+  .tab-icon {
+    font-size: 14px;
+  }
+  
+  .neighbor-card {
+    padding: 14px;
+  }
+  
+  .neighbor-avatar {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .neighbor-name {
+    font-size: 15px;
+  }
+  
+  .neighbor-bio {
+    font-size: 13px;
+  }
+  
+  .follow-button,
+  .message-button {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+  
+  .neighbors-map-wrapper {
+    padding: 10px;
+  }
+  
+  .neighbors-map-wrapper .leaflet-container {
+    height: 350px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .neighbors-container {
+    padding: 8px;
+  }
+  
+  .neighbors-header h1 {
+    font-size: 20px;
+  }
+  
+  .neighbors-controls {
+    padding: 10px;
+    gap: 16px;
+  }
+  
+  .neighbor-tab {
+    padding: 7px 8px;
+    font-size: 10px;
+  }
+  
+  .tab-icon {
+    font-size: 12px;
+  }
+  
+  .neighbor-card {
+    padding: 12px;
+  }
+  
+  .neighbor-avatar {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .neighbor-name {
+    font-size: 14px;
+  }
+  
+  .neighbor-bio {
+    font-size: 12px;
+  }
+  
+  .follow-button,
+  .message-button {
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+  
+  .neighbors-map-wrapper .leaflet-container {
+    height: 300px !important;
   }
 }
 
