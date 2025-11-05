@@ -27,7 +27,17 @@ CREATE TABLE IF NOT EXISTS posts (
   images TEXT[] DEFAULT '{}',
   location JSONB NOT NULL,
   likes INTEGER DEFAULT 0,
+  dislikes INTEGER DEFAULT 0,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Post dislikes table
+CREATE TABLE IF NOT EXISTS post_dislikes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  post_id UUID REFERENCES posts(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(post_id, user_id)
 );
 
 -- Post likes table
@@ -154,6 +164,8 @@ CREATE INDEX IF NOT EXISTS idx_messages_receiver ON messages(receiver_id);
 CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_user_follows_user_id ON user_follows(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_follows_following_id ON user_follows(following_id);
+CREATE INDEX IF NOT EXISTS idx_post_dislikes_post_id ON post_dislikes(post_id);
+CREATE INDEX IF NOT EXISTS idx_post_dislikes_user_id ON post_dislikes(user_id);
 
 -- Create functions for counters
 CREATE OR REPLACE FUNCTION increment_post_likes(post_id UUID)
@@ -167,6 +179,20 @@ CREATE OR REPLACE FUNCTION decrement_post_likes(post_id UUID)
 RETURNS VOID AS $$
 BEGIN
   UPDATE posts SET likes = GREATEST(likes - 1, 0) WHERE id = post_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION increment_post_dislikes(post_id UUID)
+RETURNS VOID AS $$
+BEGIN
+  UPDATE posts SET dislikes = dislikes + 1 WHERE id = post_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION decrement_post_dislikes(post_id UUID)
+RETURNS VOID AS $$
+BEGIN
+  UPDATE posts SET dislikes = GREATEST(dislikes - 1, 0) WHERE id = post_id;
 END;
 $$ LANGUAGE plpgsql;
 `;

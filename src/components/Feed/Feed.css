@@ -287,6 +287,15 @@
   background-color: rgba(239, 68, 68, 0.15);
 }
 
+.post-action-dislike-active {
+  color: #3b82f6;
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.post-action-dislike-active:hover {
+  background-color: rgba(59, 130, 246, 0.15);
+}
+
 /* Comments */
 .post-comments-section {
   margin-top: 16px;

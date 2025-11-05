@@ -21,6 +21,12 @@ export const postService = {
     return data;
   },
 
+  // Disliker un post
+  dislikePost: async (postId) => {
+    const { data } = await api.post(`/posts/${postId}/dislike`);
+    return data;
+  },
+
   // Commenter un post
   addComment: async (postId, content) => {
     const { data } = await api.post(`/posts/${postId}/comments`, { content });

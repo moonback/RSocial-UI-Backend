@@ -3,6 +3,7 @@ import {
   createPost,
   getPosts,
   likePost,
+  dislikePost,
   addComment,
   deletePost
 } from '../controllers/postController.js';
@@ -16,6 +17,7 @@ router.get('/', optionalAuth, getPosts);
 // Routes protégées
 router.post('/', authenticate, createPost);
 router.post('/:postId/like', authenticate, likePost);
+router.post('/:postId/dislike', authenticate, dislikePost);
 router.post('/:postId/comments', authenticate, addComment);
 router.delete('/:postId', authenticate, deletePost);
 

@@ -12,8 +12,10 @@ const PostCard = ({ post, onPostDeleted }) => {
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [showMenu, setShowMenu] = useState(false);
-  const [isLiked, setIsLiked] = useState(post.likedBy?.includes(user.id) || false);
+  const [isLiked, setIsLiked] = useState(post.likedBy?.includes(user.id) || post.isLiked || false);
+  const [isDisliked, setIsDisliked] = useState(post.dislikedBy?.includes(user.id) || post.isDisliked || false);
   const [likesCount, setLikesCount] = useState(post.likes || 0);
+  const [dislikesCount, setDislikesCount] = useState(post.dislikes || 0);
   const [comments, setComments] = useState(post.comments || []);
 
   const distance = calculateDistance(
@@ -27,11 +29,37 @@ const PostCard = ({ post, onPostDeleted }) => {
 
   const handleLike = async () => {
     try {
+      const wasDisliked = isDisliked;
       const result = await postService.likePost(post.id);
+      
       setIsLiked(result.liked);
       setLikesCount(prev => result.liked ? prev + 1 : prev - 1);
+      
+      // Si on like et qu'il y avait un dislike, le backend l'a retiré
+      if (result.liked && wasDisliked) {
+        setIsDisliked(false);
+        setDislikesCount(prev => Math.max(0, prev - 1));
+      }
     } catch (error) {
       console.error('Erreur like:', error);
+    }
+  };
+
+  const handleDislike = async () => {
+    try {
+      const wasLiked = isLiked;
+      const result = await postService.dislikePost(post.id);
+      
+      setIsDisliked(result.disliked);
+      setDislikesCount(prev => result.disliked ? prev + 1 : prev - 1);
+      
+      // Si on dislike et qu'il y avait un like, le backend l'a retiré
+      if (result.disliked && wasLiked) {
+        setIsLiked(false);
+        setLikesCount(prev => Math.max(0, prev - 1));
+      }
+    } catch (error) {
+      console.error('Erreur dislike:', error);
     }
   };
 
@@ -133,6 +161,7 @@ const PostCard = ({ post, onPostDeleted }) => {
 
       <div className="post-stats">
         <span>{likesCount} J'aime</span>
+        {dislikesCount > 0 && <span>{dislikesCount} J'aime pas</span>}
         <span>{comments.length} Commentaires</span>
       </div>
 
@@ -142,6 +171,12 @@ const PostCard = ({ post, onPostDeleted }) => {
           onClick={handleLike}
         >
           {isLiked ? '❤️' : '🤍'} J'aime
+        </button>
+        <button 
+          className={`post-action-btn ${isDisliked ? 'post-action-dislike-active' : ''}`}
+          onClick={handleDislike}
+        >
+          {isDisliked ? '👎' : '👍'} J'aime pas
         </button>
         <button 
           className="post-action-btn"

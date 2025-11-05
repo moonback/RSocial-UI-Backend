@@ -19,6 +19,7 @@ export const createPost = async (req, res) => {
         images: images || [],
         location,
         likes: 0,
+        dislikes: 0,
         created_at: new Date().toISOString()
       }])
       .select(`
@@ -72,10 +73,39 @@ export const getPosts = async (req, res) => {
       throw error;
     }
 
+    // Récupérer les likes et dislikes pour chaque post
+    const userId = req.user?.id;
+    const postsWithReactions = await Promise.all(
+      posts.map(async (post) => {
+        // Récupérer les likes
+        const { data: likes } = await supabaseAdmin
+          .from('post_likes')
+          .select('user_id')
+          .eq('post_id', post.id);
+
+        // Récupérer les dislikes
+        const { data: dislikes } = await supabaseAdmin
+          .from('post_dislikes')
+          .select('user_id')
+          .eq('post_id', post.id);
+
+        const likedBy = likes?.map(l => l.user_id) || [];
+        const dislikedBy = dislikes?.map(d => d.user_id) || [];
+
+        return {
+          ...post,
+          likedBy,
+          dislikedBy,
+          isLiked: userId ? likedBy.includes(userId) : false,
+          isDisliked: userId ? dislikedBy.includes(userId) : false,
+        };
+      })
+    );
+
     // Filtrer par distance si coordonnées fournies
-    let filteredPosts = posts;
+    let filteredPosts = postsWithReactions;
     if (lat && lng) {
-      filteredPosts = posts.filter(post => {
+      filteredPosts = postsWithReactions.filter(post => {
         const distance = calculateDistance(
           parseFloat(lat),
           parseFloat(lng),
@@ -100,6 +130,24 @@ export const likePost = async (req, res) => {
   try {
     const { postId } = req.params;
     const userId = req.user.id;
+
+    // Vérifier si l'utilisateur a déjà disliké et le retirer
+    const { data: existingDislike } = await supabaseAdmin
+      .from('post_dislikes')
+      .select('id')
+      .eq('post_id', postId)
+      .eq('user_id', userId)
+      .single();
+
+    if (existingDislike) {
+      await supabaseAdmin
+        .from('post_dislikes')
+        .delete()
+        .eq('post_id', postId)
+        .eq('user_id', userId);
+      await supabaseAdmin
+        .rpc('decrement_post_dislikes', { post_id: postId });
+    }
 
     // Vérifier si l'utilisateur a déjà liké
     const { data: existingLike } = await supabaseAdmin
@@ -143,6 +191,76 @@ export const likePost = async (req, res) => {
     console.error('Erreur likePost:', error);
     res.status(500).json({
       error: 'Erreur lors du like'
+    });
+  }
+};
+
+// Disliker un post
+export const dislikePost = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const userId = req.user.id;
+
+    // Vérifier si l'utilisateur a déjà liké et le retirer
+    const { data: existingLike } = await supabaseAdmin
+      .from('post_likes')
+      .select('id')
+      .eq('post_id', postId)
+      .eq('user_id', userId)
+      .single();
+
+    if (existingLike) {
+      await supabaseAdmin
+        .from('post_likes')
+        .delete()
+        .eq('post_id', postId)
+        .eq('user_id', userId);
+      await supabaseAdmin
+        .rpc('decrement_post_likes', { post_id: postId });
+    }
+
+    // Vérifier si l'utilisateur a déjà disliké
+    const { data: existingDislike } = await supabaseAdmin
+      .from('post_dislikes')
+      .select('id')
+      .eq('post_id', postId)
+      .eq('user_id', userId)
+      .single();
+
+    if (existingDislike) {
+      // Undislike
+      await supabaseAdmin
+        .from('post_dislikes')
+        .delete()
+        .eq('post_id', postId)
+        .eq('user_id', userId);
+
+      // Décrémenter le compteur
+      await supabaseAdmin
+        .rpc('decrement_post_dislikes', { post_id: postId });
+
+      return res.json({ message: 'Dislike retiré', disliked: false });
+    } else {
+      // Dislike
+      await supabaseAdmin
+        .from('post_dislikes')
+        .insert([{
+          id: uuidv4(),
+          post_id: postId,
+          user_id: userId,
+          created_at: new Date().toISOString()
+        }]);
+
+      // Incrémenter le compteur
+      await supabaseAdmin
+        .rpc('increment_post_dislikes', { post_id: postId });
+
+      return res.json({ message: 'Post disliké', disliked: true });
+    }
+  } catch (error) {
+    console.error('Erreur dislikePost:', error);
+    res.status(500).json({
+      error: 'Erreur lors du dislike'
     });
   }
 };
