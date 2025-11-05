@@ -16,6 +16,8 @@ const Neighbors = () => {
   const [activeTab, setActiveTab] = useState('neighbors'); // 'neighbors', 'suggestions', 'map', 'stats'
   const [radius, setRadius] = useState(user.radius);
   const [following, setFollowing] = useState(new Set());
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState('distance'); // 'distance', 'name'
 
   useEffect(() => {
     loadNeighborsData();
@@ -72,6 +74,50 @@ const Neighbors = () => {
     }
   };
 
+  const processedNeighbors = useMemo(() => {
+    let result = [...neighbors];
+
+    // Filtrage
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(n =>
+        n.name.toLowerCase().includes(query) ||
+        n.bio?.toLowerCase().includes(query)
+      );
+    }
+
+    // Tri
+    if (sortBy === 'name') {
+      result.sort((a, b) => a.name.localeCompare(b.name));
+    } else { // 'distance' par défaut
+      result.sort((a, b) => a.distance - b.distance);
+    }
+
+    return result;
+  }, [neighbors, searchQuery, sortBy]);
+
+  const processedSuggestions = useMemo(() => {
+    let result = [...suggestedNeighbors];
+
+    // Filtrage
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(n =>
+        n.name.toLowerCase().includes(query) ||
+        n.bio?.toLowerCase().includes(query)
+      );
+    }
+    
+    // Tri
+    if (sortBy === 'name') {
+      result.sort((a, b) => a.name.localeCompare(b.name));
+    } else { // 'distance' par défaut
+      result.sort((a, b) => a.distance - b.distance);
+    }
+
+    return result;
+  }, [suggestedNeighbors, searchQuery, sortBy]);
+
   const handleFollow = async (userId) => {
     try {
       await neighborService.followNeighbor(userId);
@@ -108,24 +154,48 @@ const Neighbors = () => {
   return (
     <div className="neighbors-container">
       <div className="neighbors-header">
-        <h2>🏘️ Mon Voisinage</h2>
-        <p>Connectez-vous avec vos voisins proches</p>
+        <h1>🏘️ Mon Voisinage</h1>
+        <p className="subtitle">Découvrez et connectez-vous avec les personnes qui vivent autour de vous.</p>
       </div>
 
-      {/* Contrôles du rayon */}
+      {/* Contrôles */}
       <div className="neighbors-controls">
-        <label className="radius-control">
-          <span>Rayon de recherche :</span>
-          <input
-            type="range"
-            min="1"
-            max="10"
-            value={radius}
-            onChange={(e) => setRadius(Number(e.target.value))}
-            className="radius-slider"
-          />
-          <span className="radius-value">{radius} km</span>
-        </label>
+        <div className="control-group">
+          <div className="search-bar">
+            <span className="search-icon">🔍</span>
+            <input
+              type="text"
+              placeholder="Rechercher par nom ou bio..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          
+          <div className="sort-options">
+            <span>Trier par :</span>
+            <button className={`sort-btn ${sortBy === 'distance' ? 'active' : ''}`} onClick={() => setSortBy('distance')}>
+              📍 Proximité
+            </button>
+            <button className={`sort-btn ${sortBy === 'name' ? 'active' : ''}`} onClick={() => setSortBy('name')}>
+              🔤 Nom
+            </button>
+          </div>
+        </div>
+        
+        <div className="control-group">
+          <label className="radius-control">
+            <span>Rayon :</span>
+            <input
+              type="range"
+              min="1"
+              max="10"
+              value={radius}
+              onChange={(e) => setRadius(Number(e.target.value))}
+              className="radius-slider"
+            />
+            <span className="radius-value">{radius} km</span>
+          </label>
+        </div>
       </div>
 
       {/* Onglets */}
@@ -146,23 +216,40 @@ const Neighbors = () => {
       <div className="neighbors-content">
         {loading ? (
           <div className="loading-container">
-            <div className="spinner"></div>
-            <p className="loading-text">Chargement des voisins...</p>
+            <div className="neighbors-grid">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="neighbor-card-skeleton">
+                  <div className="skeleton-header">
+                    <div className="skeleton-avatar" />
+                    <div className="skeleton-info">
+                      <div className="skeleton-line" />
+                      <div className="skeleton-line short" />
+                    </div>
+                  </div>
+                  <div className="skeleton-line" />
+                  <div className="skeleton-line" />
+                  <div className="skeleton-footer">
+                    <div className="skeleton-button" />
+                    <div className="skeleton-button" />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         ) : (
           <>
             {activeTab === 'neighbors' && (
               <div className="neighbors-list-section">
-                <h3>Voisins les plus proches ({neighbors.length})</h3>
-                {neighbors.length === 0 ? (
+                <h3>Voisins les plus proches ({processedNeighbors.length})</h3>
+                {processedNeighbors.length === 0 ? (
                   <div className="empty-state">
                     <div className="empty-state-icon">👥</div>
                     <h3>Aucun voisin trouvé</h3>
-                    <p>Augmentez votre rayon de recherche ou invitez des amis à rejoindre !</p>
+                    <p>Augmentez votre rayon de recherche ou essayez un autre filtre.</p>
                   </div>
                 ) : (
                   <div className="neighbors-grid">
-                    {neighbors.map(neighbor => (
+                    {processedNeighbors.map(neighbor => (
                       <NeighborCard
                         key={neighbor.id}
                         neighbor={neighbor}
@@ -179,8 +266,8 @@ const Neighbors = () => {
 
             {activeTab === 'suggestions' && (
               <div className="suggestions-section">
-                <h3>Suggestions de voisins à suivre ({suggestedNeighbors.length})</h3>
-                {suggestedNeighbors.length === 0 ? (
+                <h3>Suggestions de voisins à suivre ({processedSuggestions.length})</h3>
+                {processedSuggestions.length === 0 ? (
                   <div className="empty-state">
                     <div className="empty-state-icon">✨</div>
                     <h3>Aucune suggestion</h3>
@@ -188,7 +275,7 @@ const Neighbors = () => {
                   </div>
                 ) : (
                   <div className="neighbors-grid">
-                    {suggestedNeighbors.map(neighbor => (
+                    {processedSuggestions.map(neighbor => (
                       <NeighborCard
                         key={neighbor.id}
                         neighbor={neighbor}
