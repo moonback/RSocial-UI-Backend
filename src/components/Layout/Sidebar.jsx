@@ -11,6 +11,7 @@ const Sidebar = ({ currentView, onViewChange, isOpen, onClose }) => {
 
   const menuItems = [
     { id: 'feed', icon: '🏠', label: 'Fil d\'actualités', badge: null },
+    { id: 'neighbors', icon: '🏘️', label: 'Voisinage', badge: null },
     { id: 'map', icon: '🗺️', label: 'Carte', badge: null },
     { id: 'groups', icon: '👥', label: 'Groupes', badge: null },
     { id: 'events', icon: '📅', label: 'Événements', badge: null },

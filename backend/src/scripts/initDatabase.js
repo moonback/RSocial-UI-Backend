@@ -135,6 +135,16 @@ CREATE TABLE IF NOT EXISTS blocked_users (
   UNIQUE(user_id, blocked_user_id)
 );
 
+-- User follows table (système de suivi)
+CREATE TABLE IF NOT EXISTS user_follows (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  following_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(user_id, following_id),
+  CHECK (user_id != following_id)
+);
+
 -- Create indexes for performance
 CREATE INDEX IF NOT EXISTS idx_posts_user_id ON posts(user_id);
 CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at DESC);
@@ -142,6 +152,8 @@ CREATE INDEX IF NOT EXISTS idx_comments_post_id ON comments(post_id);
 CREATE INDEX IF NOT EXISTS idx_messages_sender ON messages(sender_id);
 CREATE INDEX IF NOT EXISTS idx_messages_receiver ON messages(receiver_id);
 CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_user_follows_user_id ON user_follows(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_follows_following_id ON user_follows(following_id);
 
 -- Create functions for counters
 CREATE OR REPLACE FUNCTION increment_post_likes(post_id UUID)

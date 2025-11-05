@@ -6,6 +6,7 @@ import Register from './components/Auth/Register';
 import Header from './components/Layout/Header';
 import Sidebar from './components/Layout/Sidebar';
 import Feed from './components/Feed/Feed';
+import Neighbors from './components/Neighbors/Neighbors';
 import MapView from './components/Map/MapView';
 import Groups from './components/Groups/Groups';
 import Events from './components/Events/Events';
@@ -43,6 +44,8 @@ const AppContent = () => {
     switch (currentView) {
       case 'feed':
         return <Feed />;
+      case 'neighbors':
+        return <Neighbors />;
       case 'map':
         return <MapView />;
       case 'groups':
