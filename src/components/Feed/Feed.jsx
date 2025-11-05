@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import postService from '../../services/postService';
 import { filterByDistance } from '../../utils/geolocation';
@@ -18,6 +18,10 @@ const Feed = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearch, setShowSearch] = useState(false);
   const [newPostsCount, setNewPostsCount] = useState(0);
+
+  // États pour les stories
+  const [showStories, setShowStories] = useState(false);
+  const [isAtTop, setIsAtTop] = useState(true);
   
   // Filtres avancés
   const [customRadius, setCustomRadius] = useState(user.radius);
@@ -34,6 +38,31 @@ const Feed = () => {
   useEffect(() => {
     setCustomRadius(user.radius);
   }, [user.radius]);
+
+  // Gestion du scroll pour afficher/masquer les stories
+  const handleScroll = useCallback(() => {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const atTop = scrollTop < 50; // Considérer "en haut" si scroll < 50px
+
+    setIsAtTop(atTop);
+
+    // Masquer automatiquement les stories si on scroll vers le bas
+    if (!atTop && showStories) {
+      setShowStories(false);
+    }
+  }, [showStories]);
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
+
+  // Fonction pour afficher les stories
+  const handleShowStories = () => {
+    setShowStories(true);
+    // Scroll vers le haut pour voir les stories
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const loadPosts = async () => {
     try {
@@ -143,7 +172,22 @@ const Feed = () => {
 
   return (
     <div className="feed-container">
-      <Stories />
+      {/* Stories - affichées seulement si en haut de l'écran ou si bouton appuyé */}
+      {(isAtTop || showStories) && <Stories />}
+
+      {/* Bouton pour afficher les stories si elles sont masquées */}
+      {!isAtTop && !showStories && (
+        <div className="stories-toggle-container">
+          <button
+            className="stories-toggle-button"
+            onClick={handleShowStories}
+            title="Voir les stories"
+          >
+            <span className="stories-icon">📱</span>
+            <span>Stories</span>
+          </button>
+        </div>
+      )}
 
       <div className="feed-header">
         <div className="feed-header-content">
