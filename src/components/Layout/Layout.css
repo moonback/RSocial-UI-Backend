@@ -5,9 +5,12 @@
   left: 0;
   right: 0;
   height: 64px;
-  background: white;
-  border-bottom: 1px solid #e5e7eb;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-color);
   z-index: 100;
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.95);
 }
 
 .header-content {
@@ -38,7 +41,17 @@
 .header-title {
   font-size: 24px;
   margin: 0;
-  color: #1f2937;
+  color: var(--text-primary);
+  font-weight: 700;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: all var(--transition-base);
+}
+
+.header-title:hover {
+  transform: scale(1.05);
 }
 
 .header-right {
@@ -103,11 +116,12 @@
   left: 0;
   bottom: 0;
   width: 260px;
-  background: white;
-  border-right: 1px solid #e5e7eb;
+  background: var(--bg-primary);
+  border-right: 1px solid var(--border-color);
   overflow-y: auto;
   z-index: 90;
-  transition: transform 0.3s ease;
+  transition: transform var(--transition-slow);
+  box-shadow: var(--shadow-sm);
 }
 
 .sidebar-nav {
@@ -126,17 +140,43 @@
   border-left: 3px solid transparent;
   cursor: pointer;
   text-align: left;
-  transition: all 0.2s;
+  transition: all var(--transition-base);
   position: relative;
+  margin: 0 var(--spacing-xs);
+  border-radius: var(--radius-lg);
+}
+
+.sidebar-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 0;
+  background: var(--primary-gradient);
+  border-radius: 0 var(--radius-full) var(--radius-full) 0;
+  transition: height var(--transition-base);
 }
 
 .sidebar-item:hover {
-  background-color: #f9fafb;
+  background-color: var(--bg-secondary);
+  transform: translateX(4px);
+}
+
+.sidebar-item:hover::before {
+  height: 60%;
 }
 
 .sidebar-item-active {
-  background-color: #ede9fe;
-  border-left-color: #667eea;
+  background: linear-gradient(to right, var(--primary-light), transparent);
+  border-left-color: var(--primary-color);
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+.sidebar-item-active::before {
+  height: 100%;
 }
 
 .sidebar-icon {

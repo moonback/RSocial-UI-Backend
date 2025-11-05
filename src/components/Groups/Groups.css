@@ -8,33 +8,58 @@
 }
 
 .groups-header h2 {
-  font-size: 28px;
-  margin: 0 0 8px 0;
-  color: #1f2937;
+  font-size: 32px;
+  margin: 0 0 var(--spacing-sm) 0;
+  color: var(--text-primary);
+  font-weight: 700;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .groups-header p {
-  color: #6b7280;
+  color: var(--text-secondary);
   margin: 0;
+  font-size: 16px;
 }
 
 .create-group-button {
   width: 100%;
   max-width: 400px;
-  padding: 16px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  padding: var(--spacing-md);
+  background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
   color: white;
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  margin-bottom: 20px;
-  transition: transform 0.2s;
+  margin-bottom: var(--spacing-lg);
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.create-group-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
 }
 
 .create-group-button:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+.create-group-button:hover::before {
+  left: 100%;
 }
 
 .groups-filters {
@@ -51,16 +76,36 @@
 
 /* Group Card */
 .group-card {
-  background: white;
-  border-radius: 12px;
+  background: var(--bg-primary);
+  border-radius: var(--radius-xl);
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-base);
+  border: 1px solid var(--border-color);
+  position: relative;
+}
+
+.group-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--primary-gradient);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition-base);
 }
 
 .group-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--primary-light);
+}
+
+.group-card:hover::after {
+  transform: scaleX(1);
 }
 
 .group-header {

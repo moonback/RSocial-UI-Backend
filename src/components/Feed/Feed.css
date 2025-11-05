@@ -74,10 +74,37 @@
 
 /* Post Card */
 .post-card {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: var(--bg-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-base);
+  border: 1px solid var(--border-color);
+  position: relative;
+  overflow: hidden;
+}
+
+.post-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--primary-gradient);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition-base);
+}
+
+.post-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+  border-color: var(--primary-light);
+}
+
+.post-card:hover::before {
+  transform: scaleX(1);
 }
 
 .post-header {
@@ -97,17 +124,31 @@
   height: 48px;
   border-radius: 50%;
   object-fit: cover;
+  border: 3px solid var(--primary-light);
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
+}
+
+.post-avatar:hover {
+  border-color: var(--primary-color);
+  transform: scale(1.1);
+  box-shadow: var(--shadow-md);
 }
 
 .post-user-name {
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text-primary);
   margin-bottom: 4px;
+  transition: color var(--transition-base);
+}
+
+.post-user-name:hover {
+  color: var(--primary-color);
 }
 
 .post-meta {
   font-size: 13px;
-  color: #6b7280;
+  color: var(--text-secondary);
 }
 
 .post-actions {
@@ -203,23 +244,39 @@
 
 .post-action-btn {
   flex: 1;
-  padding: 10px;
+  padding: 10px 12px;
   background: none;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   font-size: 15px;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--text-secondary);
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all var(--transition-base);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
 }
 
 .post-action-btn:hover {
-  background-color: #f3f4f6;
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.post-action-btn:active {
+  transform: translateY(0);
 }
 
 .post-action-active {
-  color: #ef4444;
+  color: var(--error-color);
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.post-action-active:hover {
+  background-color: rgba(239, 68, 68, 0.15);
 }
 
 /* Comments */
