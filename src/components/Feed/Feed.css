@@ -54,10 +54,6 @@
   box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
 }
 
-.create-post-button:hover {
-  transform: translateY(-2px);
-}
-
 .feed-filters-container {
   margin-bottom: 24px;
 }
@@ -902,6 +898,21 @@
   border-radius: 16px;
   font-size: 12px;
   font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .feed-header-content {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .feed-header-text {
+    width: 100%;
+  }
+
+  .create-post-button {
+    width: 100%;
+  }
 }
 
 @media (max-width: 640px) {
