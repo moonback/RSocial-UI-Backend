@@ -93,7 +93,10 @@ const Login = ({ onToggleMode }) => {
 
         <form onSubmit={handleSubmit} className="auth-form">
           {errors.general && (
-            <div className="error-message">{errors.general}</div>
+            <div className="error-message" role="alert">
+              <span className="error-icon">⚠️</span>
+              <span>{errors.general}</span>
+            </div>
           )}
 
           <div className="form-group">
