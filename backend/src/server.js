@@ -13,6 +13,7 @@ import classifiedRoutes from './routes/classifieds.js';
 import messageRoutes from './routes/messages.js';
 import userRoutes from './routes/users.js';
 import uploadRoutes from './routes/upload.js';
+import storyRoutes from './routes/stories.js';
 
 // Middleware
 import { errorHandler } from './middleware/errorHandler.js';
@@ -59,6 +60,7 @@ app.use('/api/classifieds', classifiedRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/stories', storyRoutes);
 
 // Error handling
 app.use(errorHandler);

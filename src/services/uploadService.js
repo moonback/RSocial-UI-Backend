@@ -29,6 +29,20 @@ export const uploadService = {
     });
 
     return data.images.map(img => img.url);
+  },
+
+  // Upload une vidéo
+  uploadVideo: async (file) => {
+    const formData = new FormData();
+    formData.append('video', file);
+
+    const { data } = await api.post('/upload/video', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+
+    return data.url;
   }
 };
 

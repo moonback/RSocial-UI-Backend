@@ -5,6 +5,7 @@ import { filterByDistance } from '../../utils/geolocation';
 import PostCard from './PostCard';
 import CreatePost from './CreatePost';
 import AdvancedFilters from './AdvancedFilters';
+import Stories from '../Stories/Stories';
 import './Feed.css';
 
 const Feed = () => {
@@ -129,6 +130,8 @@ const Feed = () => {
 
   return (
     <div className="feed-container">
+      <Stories />
+      
       <div className="feed-header">
         <div className="feed-header-content">
           <div className="feed-header-text">

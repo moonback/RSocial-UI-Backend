@@ -155,6 +155,26 @@ CREATE TABLE IF NOT EXISTS user_follows (
   CHECK (user_id != following_id)
 );
 
+-- Stories table (système de stories 24h)
+CREATE TABLE IF NOT EXISTS stories (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  media_url TEXT NOT NULL,
+  media_type VARCHAR(20) NOT NULL CHECK (media_type IN ('image', 'video')),
+  location JSONB,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  expires_at TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+-- Story views table (qui a vu quelle story)
+CREATE TABLE IF NOT EXISTS story_views (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  story_id UUID REFERENCES stories(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  viewed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(story_id, user_id)
+);
+
 -- Create indexes for performance
 CREATE INDEX IF NOT EXISTS idx_posts_user_id ON posts(user_id);
 CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at DESC);
@@ -166,6 +186,11 @@ CREATE INDEX IF NOT EXISTS idx_user_follows_user_id ON user_follows(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_follows_following_id ON user_follows(following_id);
 CREATE INDEX IF NOT EXISTS idx_post_dislikes_post_id ON post_dislikes(post_id);
 CREATE INDEX IF NOT EXISTS idx_post_dislikes_user_id ON post_dislikes(user_id);
+CREATE INDEX IF NOT EXISTS idx_stories_user_id ON stories(user_id);
+CREATE INDEX IF NOT EXISTS idx_stories_expires_at ON stories(expires_at);
+CREATE INDEX IF NOT EXISTS idx_stories_created_at ON stories(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_story_views_story_id ON story_views(story_id);
+CREATE INDEX IF NOT EXISTS idx_story_views_user_id ON story_views(user_id);
 
 -- Create functions for counters
 CREATE OR REPLACE FUNCTION increment_post_likes(post_id UUID)

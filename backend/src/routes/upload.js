@@ -11,10 +11,10 @@ const storage = multer.memoryStorage();
 const upload = multer({
   storage,
   limits: {
-    fileSize: parseInt(process.env.MAX_FILE_SIZE) || 5 * 1024 * 1024, // 5MB par défaut
+    fileSize: parseInt(process.env.MAX_FILE_SIZE) || 50 * 1024 * 1024, // 50MB par défaut
   },
   fileFilter: (req, file, cb) => {
-    const allowedTypes = (process.env.ALLOWED_FILE_TYPES || 'image/jpeg,image/png,image/gif,image/webp').split(',');
+    const allowedTypes = (process.env.ALLOWED_FILE_TYPES || 'image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm,video/quicktime').split(',');
     if (allowedTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
@@ -105,6 +105,47 @@ router.post('/images', authenticate, upload.array('images', 10), async (req, res
     console.error('Erreur upload multiple:', error);
     res.status(500).json({
       error: 'Erreur lors de l\'upload'
+    });
+  }
+});
+
+// Upload de vidéo
+router.post('/video', authenticate, upload.single('video'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'Aucun fichier fourni' });
+    }
+
+    const fileExt = req.file.originalname.split('.').pop();
+    const fileName = `${uuidv4()}.${fileExt}`;
+    const filePath = `videos/${fileName}`;
+
+    // Upload vers Supabase Storage
+    const { data, error } = await supabaseAdmin.storage
+      .from('rsocial-uploads')
+      .upload(filePath, req.file.buffer, {
+        contentType: req.file.mimetype,
+        upsert: false
+      });
+
+    if (error) {
+      throw error;
+    }
+
+    // Récupérer l'URL publique
+    const { data: publicUrlData } = supabaseAdmin.storage
+      .from('rsocial-uploads')
+      .getPublicUrl(filePath);
+
+    res.json({
+      message: 'Vidéo uploadée',
+      url: publicUrlData.publicUrl,
+      path: filePath
+    });
+  } catch (error) {
+    console.error('Erreur upload vidéo:', error);
+    res.status(500).json({
+      error: error.message || 'Erreur lors de l\'upload de la vidéo'
     });
   }
 });
