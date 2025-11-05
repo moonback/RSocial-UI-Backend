@@ -114,6 +114,52 @@ const PostCard = ({ post, onPostDeleted }) => {
     return colors[type] || '#6b7280';
   };
 
+  const formatPostContent = (content) => {
+    if (!content) return '';
+
+    // Diviser le contenu en lignes
+    return content.split('\n').map((line, lineIndex) => (
+      <span key={lineIndex}>
+        {line.split(/(\s+)/).map((part, partIndex) => {
+          // Hashtags
+          if (part.startsWith('#')) {
+            const hashtag = part.slice(1);
+            return (
+              <span
+                key={partIndex}
+                className="hashtag"
+                onClick={() => {
+                  // Ici on pourrait déclencher une recherche par hashtag
+                  console.log('Recherche hashtag:', hashtag);
+                }}
+              >
+                {part}
+              </span>
+            );
+          }
+          // Mentions
+          else if (part.startsWith('@')) {
+            const mention = part.slice(1);
+            return (
+              <span
+                key={partIndex}
+                className="mention"
+                onClick={() => {
+                  // Ici on pourrait naviguer vers le profil
+                  console.log('Mention utilisateur:', mention);
+                }}
+              >
+                {part}
+              </span>
+            );
+          }
+          return part;
+        })}
+        {lineIndex < content.split('\n').length - 1 && <br />}
+      </span>
+    ));
+  };
+
   return (
     <div className="post-card">
       <div className="post-header">
@@ -149,11 +195,15 @@ const PostCard = ({ post, onPostDeleted }) => {
       </div>
 
       <div className="post-content">
-        <p>{post.content}</p>
+        <div className="post-text">
+          {formatPostContent(post.content)}
+        </div>
         {post.images && post.images.length > 0 && (
           <div className="post-images">
             {post.images.map((image, index) => (
-              <img key={index} src={image} alt="" className="post-image" />
+              <div key={index} className="post-image-container">
+                <img src={image} alt="" className="post-image" />
+              </div>
             ))}
           </div>
         )}
@@ -166,23 +216,48 @@ const PostCard = ({ post, onPostDeleted }) => {
       </div>
 
       <div className="post-footer">
-        <button 
-          className={`post-action-btn ${isLiked ? 'post-action-active' : ''}`}
+        <button
+          className={`post-action-btn like-btn ${isLiked ? 'post-action-active' : ''}`}
           onClick={handleLike}
         >
-          {isLiked ? '❤️' : '🤍'} J'aime
+          <span className="action-icon">{isLiked ? '❤️' : '🤍'}</span>
+          <span className="action-text">J'aime</span>
+          {likesCount > 0 && <span className="action-count">{likesCount}</span>}
         </button>
-        <button 
-          className={`post-action-btn ${isDisliked ? 'post-action-dislike-active' : ''}`}
+        <button
+          className={`post-action-btn dislike-btn ${isDisliked ? 'post-action-dislike-active' : ''}`}
           onClick={handleDislike}
         >
-          {isDisliked ? '👎' : '👍'} J'aime pas
+          <span className="action-icon">{isDisliked ? '👎' : '👍'}</span>
+          <span className="action-text">J'aime pas</span>
+          {dislikesCount > 0 && <span className="action-count">{dislikesCount}</span>}
         </button>
-        <button 
-          className="post-action-btn"
+        <button
+          className={`post-action-btn comment-btn ${showComments ? 'active' : ''}`}
           onClick={() => setShowComments(!showComments)}
         >
-          💬 Commenter
+          <span className="action-icon">💬</span>
+          <span className="action-text">Commenter</span>
+          {comments.length > 0 && <span className="action-count">{comments.length}</span>}
+        </button>
+        <button
+          className="post-action-btn share-btn"
+          onClick={() => {
+            if (navigator.share) {
+              navigator.share({
+                title: `Publication de ${post.users?.name || post.userName}`,
+                text: post.content,
+                url: window.location.href,
+              });
+            } else {
+              // Fallback: copier le lien
+              navigator.clipboard.writeText(window.location.href);
+              alert('Lien copié dans le presse-papiers !');
+            }
+          }}
+        >
+          <span className="action-icon">📤</span>
+          <span className="action-text">Partager</span>
         </button>
       </div>
 

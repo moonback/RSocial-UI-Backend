@@ -15,6 +15,9 @@ const Feed = () => {
   const [filter, setFilter] = useState('all');
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showSearch, setShowSearch] = useState(false);
+  const [newPostsCount, setNewPostsCount] = useState(0);
   
   // Filtres avancés
   const [customRadius, setCustomRadius] = useState(user.radius);
@@ -75,19 +78,29 @@ const Feed = () => {
   const filteredPosts = useMemo(() => {
     // Filtrer par distance personnalisée
     let filtered = filterByDistance(posts, user.location, customRadius);
-    
+
     // Filtrer par type si nécessaire
     if (filter !== 'all') {
       filtered = filtered.filter(post => post.type === filter);
     }
-    
+
     // Filtrer par auteur
     if (selectedAuthor) {
-      filtered = filtered.filter(post => 
+      filtered = filtered.filter(post =>
         (post.user_id || post.userId) === selectedAuthor
       );
     }
-    
+
+    // Recherche textuelle
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(post =>
+        post.content?.toLowerCase().includes(query) ||
+        post.users?.name?.toLowerCase().includes(query) ||
+        post.type?.toLowerCase().includes(query)
+      );
+    }
+
     // Filtrer par date
     if (dateFilter && (dateFilter.start || dateFilter.end)) {
       filtered = filtered.filter(post => {
@@ -101,7 +114,7 @@ const Feed = () => {
         return true;
       });
     }
-    
+
     // Trier selon le critère sélectionné
     if (sortBy === 'popularity') {
       // Trier par popularité (likes + commentaires)
@@ -112,13 +125,13 @@ const Feed = () => {
       });
     } else {
       // Trier par date (plus récent en premier)
-      filtered = filtered.sort((a, b) => 
+      filtered = filtered.sort((a, b) =>
         new Date(b.created_at || b.createdAt) - new Date(a.created_at || a.createdAt)
       );
     }
-    
+
     return filtered;
-  }, [posts, user.location, customRadius, filter, selectedAuthor, sortBy, dateFilter]);
+  }, [posts, user.location, customRadius, filter, selectedAuthor, sortBy, dateFilter, searchQuery]);
 
   const filterOptions = [
     { value: 'all', label: 'Tout voir', icon: '📋' },
@@ -131,52 +144,104 @@ const Feed = () => {
   return (
     <div className="feed-container">
       <Stories />
-      
+
       <div className="feed-header">
         <div className="feed-header-content">
           <div className="feed-header-text">
-            <h2>Fil d'actualités local</h2>
-            <p>
-              {filteredPosts.length > 0 ? (
-                <>
-                  {filteredPosts.length} {filteredPosts.length === 1 ? 'publication' : 'publications'} 
-                  {customRadius !== user.radius && ` dans un rayon de ${customRadius} km`}
-                  {customRadius === user.radius && ` dans un rayon de ${user.radius} km`}
-                </>
-              ) : (
-                `Aucune publication dans un rayon de ${customRadius} km`
-              )}
+            <div className="feed-title-section">
+              <h1>🏠 Fil d'actualités local</h1>
+              <div className="feed-stats">
+                <span className="stats-badge">
+                  📍 {customRadius}km
+                </span>
+                <span className="stats-badge">
+                  📊 {filteredPosts.length} publication{filteredPosts.length !== 1 ? 's' : ''}
+                </span>
+              </div>
+            </div>
+            <p className="feed-subtitle">
+              Découvrez ce qui se passe dans votre quartier
             </p>
           </div>
-          <button 
-            className="create-post-button"
-            onClick={() => setShowCreatePost(true)}
-          >
-            ✏️ Créer une publication
-          </button>
+          <div className="feed-actions">
+            <button
+              className="create-post-button primary-action"
+              onClick={() => setShowCreatePost(true)}
+            >
+              <span className="action-icon">✏️</span>
+              <span>Publier</span>
+            </button>
+          </div>
         </div>
       </div>
 
       <div className="feed-filters-container">
         <div className="feed-filters">
-          {filterOptions.map(option => (
+          <button
+            className={`filter-chip ${filter === 'all' ? 'filter-chip-active' : ''} filter-all`}
+            onClick={() => setFilter('all')}
+          >
+            <span className="filter-icon">🌟</span>
+            <span className="filter-text">Tout</span>
+          </button>
+          {filterOptions.slice(1).map(option => (
             <button
               key={option.value}
               className={`filter-chip ${filter === option.value ? 'filter-chip-active' : ''}`}
               onClick={() => setFilter(option.value)}
             >
-              {option.icon} {option.label}
+              <span className="filter-icon">{option.icon}</span>
+              <span className="filter-text">{option.label}</span>
             </button>
           ))}
         </div>
-        
-        <button 
-          className={`advanced-filters-toggle ${showAdvancedFilters ? 'active' : ''}`}
-          onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-        >
-          🔍 Filtres avancés {showAdvancedFilters ? '▼' : '▶'}
-        </button>
+
+        <div className="filter-actions">
+          <button
+            className={`search-toggle ${showSearch ? 'active' : ''}`}
+            onClick={() => setShowSearch(!showSearch)}
+          >
+            <span className="search-icon">🔍</span>
+            <span>Rechercher</span>
+          </button>
+          <button
+            className={`advanced-filters-toggle ${showAdvancedFilters ? 'active' : ''}`}
+            onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+          >
+            ⚙️ Filtres
+          </button>
+        </div>
       </div>
+
+      {showSearch && (
+        <div className="search-container">
+          <div className="search-input-wrapper">
+            <input
+              type="text"
+              placeholder="Rechercher dans les publications..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="search-input"
+              autoFocus
+            />
+            {searchQuery && (
+              <button
+                className="search-clear"
+                onClick={() => setSearchQuery('')}
+              >
+                ✕
+              </button>
+            )}
+          </div>
+          {searchQuery && (
+            <div className="search-results">
+              <span className="search-count">
+                {filteredPosts.length} résultat{filteredPosts.length !== 1 ? 's' : ''} pour "{searchQuery}"
+              </span>
+            </div>
+          )}
+        </div>
+      )}
 
       {showAdvancedFilters && (
         <AdvancedFilters
@@ -196,19 +261,59 @@ const Feed = () => {
       <div className="posts-list">
         {loading ? (
           <div className="loading-container">
-            <div className="spinner"></div>
-            <p className="loading-text">Chargement des publications...</p>
+            <div className="loading-skeleton">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="post-skeleton">
+                  <div className="skeleton-header">
+                    <div className="skeleton-avatar"></div>
+                    <div className="skeleton-text"></div>
+                  </div>
+                  <div className="skeleton-content">
+                    <div className="skeleton-line"></div>
+                    <div className="skeleton-line short"></div>
+                  </div>
+                  <div className="skeleton-actions">
+                    <div className="skeleton-button"></div>
+                    <div className="skeleton-button"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="loading-spinner">
+              <div className="spinner"></div>
+              <p className="loading-text">Découverte de votre quartier...</p>
+            </div>
           </div>
         ) : filteredPosts.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-state-icon">📭</div>
-            <h3>Aucune publication</h3>
-            <p>Soyez le premier à publier dans votre quartier !</p>
+            <div className="empty-state-visual">
+              <div className="empty-icon">🏘️</div>
+              <div className="empty-decoration">✨</div>
+            </div>
+            <div className="empty-content">
+              <h3>Le quartier est calme...</h3>
+              <p>Soyez le premier à partager quelque chose avec vos voisins !</p>
+              <button
+                className="empty-cta-button"
+                onClick={() => setShowCreatePost(true)}
+              >
+                <span className="cta-icon">💫</span>
+                Créer la première publication
+              </button>
+            </div>
           </div>
         ) : (
-          filteredPosts.map(post => (
-            <PostCard key={post.id} post={post} onPostDeleted={loadPosts} />
-          ))
+          <>
+            {filteredPosts.map(post => (
+              <PostCard key={post.id} post={post} onPostDeleted={loadPosts} />
+            ))}
+            <div className="feed-footer">
+              <div className="feed-end-message">
+                <span className="end-icon">🎉</span>
+                <span>Vous êtes à jour !</span>
+              </div>
+            </div>
+          </>
         )}
       </div>
 
