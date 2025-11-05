@@ -1,0 +1,290 @@
+.moderation-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.moderation-header {
+  margin-bottom: 24px;
+}
+
+.moderation-header h2 {
+  font-size: 28px;
+  margin: 0 0 8px 0;
+  color: #1f2937;
+}
+
+.moderation-header p {
+  color: #6b7280;
+  margin: 0;
+}
+
+.moderation-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.tab-button {
+  padding: 12px 24px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-size: 16px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab-button:hover {
+  color: #1f2937;
+}
+
+.tab-active {
+  color: #667eea;
+  border-bottom-color: #667eea;
+}
+
+.moderation-content {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+  min-height: 400px;
+}
+
+/* Reports */
+.reports-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.report-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  transition: box-shadow 0.2s;
+}
+
+.report-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.report-type-badge {
+  padding: 6px 12px;
+  background-color: #fef3c7;
+  color: #92400e;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.report-status-badge {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-pending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status-resolved {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-dismissed {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+.report-content h4 {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 8px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.report-content p {
+  font-size: 15px;
+  color: #1f2937;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.report-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.report-time {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.report-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-action {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-resolve {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.btn-resolve:hover {
+  background-color: #a7f3d0;
+}
+
+.btn-dismiss {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.btn-dismiss:hover {
+  background-color: #fecaca;
+}
+
+/* Blocked Users */
+.blocked-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.blocked-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  transition: box-shadow 0.2s;
+}
+
+.blocked-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.blocked-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.blocked-info {
+  flex: 1;
+}
+
+.blocked-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.blocked-note {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.btn-unblock {
+  padding: 10px 20px;
+  background-color: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-unblock:hover {
+  background-color: #5568d3;
+}
+
+/* Moderation Info */
+.moderation-info {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  padding: 24px;
+  color: white;
+}
+
+.moderation-info h3 {
+  font-size: 20px;
+  margin: 0 0 16px 0;
+}
+
+.moderation-info ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.moderation-info li {
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+  .moderation-tabs {
+    flex-direction: column;
+  }
+
+  .tab-button {
+    border-bottom: none;
+    border-left: 3px solid transparent;
+  }
+
+  .tab-active {
+    border-bottom-color: transparent;
+    border-left-color: #667eea;
+  }
+
+  .report-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .report-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .btn-action {
+    width: 100%;
+  }
+}
+

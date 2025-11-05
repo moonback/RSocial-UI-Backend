@@ -1,0 +1,170 @@
+.map-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.map-header {
+  margin-bottom: 20px;
+}
+
+.map-header h2 {
+  font-size: 28px;
+  margin: 0 0 8px 0;
+  color: #1f2937;
+}
+
+.map-header p {
+  color: #6b7280;
+  margin: 0;
+}
+
+.map-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.map-wrapper {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.leaflet-map {
+  height: 600px;
+  width: 100%;
+}
+
+/* Custom Markers */
+.custom-marker-container {
+  background: transparent;
+  border: none;
+}
+
+.custom-marker {
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.custom-marker.user {
+  background-color: #667eea;
+}
+
+.custom-marker.post {
+  background-color: #3b82f6;
+}
+
+.custom-marker.event {
+  background-color: #8b5cf6;
+}
+
+.custom-marker.group {
+  background-color: #10b981;
+}
+
+/* Map Popup */
+.map-popup {
+  min-width: 200px;
+}
+
+.map-popup strong {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 8px;
+  color: #1f2937;
+}
+
+.map-popup p {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.popup-attendees,
+.popup-members {
+  font-size: 13px;
+  color: #667eea;
+  font-weight: 500;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Map Legend */
+.map-legend {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.legend-icon.user {
+  background-color: #667eea;
+}
+
+.legend-icon.post {
+  background-color: #3b82f6;
+}
+
+.legend-icon.event {
+  background-color: #8b5cf6;
+}
+
+.legend-icon.group {
+  background-color: #10b981;
+}
+
+.legend-item span:last-child {
+  font-size: 14px;
+  color: #374151;
+}
+
+/* Leaflet Overrides */
+.leaflet-popup-content-wrapper {
+  border-radius: 8px;
+}
+
+.leaflet-popup-content {
+  margin: 12px;
+}
+
+@media (max-width: 768px) {
+  .leaflet-map {
+    height: 400px;
+  }
+  
+  .map-legend {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
